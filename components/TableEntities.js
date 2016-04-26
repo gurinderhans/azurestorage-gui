@@ -30,8 +30,8 @@ var TablesList = React.createClass({
 	render() {
 		return (
 			<ul>
-				{this.state.entities.map(entity => {
-					return <li key='s'>{JSON.stringify(entity)}</li>
+				{this.state.entities.map((entity, i) => {
+					return <li key={i}>{JSON.stringify(entity)}</li>
 				})}
 			</ul>
 		);
