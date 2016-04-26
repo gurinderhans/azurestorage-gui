@@ -2,11 +2,11 @@
   "name": "azurestorage-gui",
   "version": "1.0.0",
   "description": "GUI Interface for Microsoft AzureStorage",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "watchify -v -d -t lessify -t [ babelify --presets [ es2015 react ] ] index.js -o compiled.js",
-    "build": "NODE_ENV=production browserify index.js -t lessify -t [ babelify --presets [ es2015 react ] ] | uglifyjs > compiled.js"
+    "watch": "watchify -v -d -t lessify -t [ babelify --presets [ es2015 react ] ] index.js -o public/compiled.js",
+    "build": "NODE_ENV=production browserify index.js -t lessify -t [ babelify --presets [ es2015 react ] ] | uglifyjs > public/compiled.js"
   },
   "repository": {
     "type": "git",
@@ -16,6 +16,8 @@
   "license": "MIT",
   "dependencies": {
     "azure-storage": "^0.10.0",
+    "body-parser": "^1.15.0",
+    "express": "^4.13.4",
     "react": "^15.0.1",
     "react-dom": "^15.0.1"
   },
