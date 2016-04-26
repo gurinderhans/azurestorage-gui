@@ -1,4 +1,5 @@
 import React from 'react';
+import TableSingleEntity from './TableSingleEntity'
 
 var TablesList = React.createClass({
 	getInitialState() {
@@ -29,11 +30,13 @@ var TablesList = React.createClass({
 
 	render() {
 		return (
-			<ul>
+			<div>
 				{this.state.entities.map((entity, i) => {
-					return <li key={i}>{JSON.stringify(entity)}</li>
+					return (
+						<TableSingleEntity key={i} entity={entity} />
+					);
 				})}
-			</ul>
+			</div>
 		);
 	}
 });
