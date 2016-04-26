@@ -7,7 +7,17 @@ var TablesList = React.createClass({
 		}
 	},
 
-	componentDidUpdate() {
+	componentDidMount() {
+		this.fetchEntities()
+	},
+
+	componentDidUpdate(prevProps) {
+		if (this.props.url != prevProps.url) {
+			this.fetchEntities()
+		}
+	},
+
+	fetchEntities() {
 		fetch(this.props.url)
 		.then(response => response.json())
 		.then(response => {
