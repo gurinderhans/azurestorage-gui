@@ -2,7 +2,8 @@ const azure = require('azure-storage');
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const tableService = azure.createTableService('account', 'secretKey');
+const creds = require('./creds');
+const tableService = azure.createTableService(creds.accountName, creds.secretKey);
 
 const app = express();
 
@@ -14,7 +15,7 @@ app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
 
 
-// <api> router
+// api router
 const router = express.Router();
 
 // fetch list of all tables

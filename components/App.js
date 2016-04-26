@@ -20,15 +20,11 @@ var App = React.createClass({
 			<div className='row'>
 				<div className='col-md-3'>
 					<h3>Tables</h3>
-					<div>
-						<input type='text' placeholder='New Table Name' />
-						<button>+</button>
-					</div>
 					<TablesList className='tablesList' tableClick={this.handleClick} url='/api/tables' />
 				</div>
 				<div className='col-md-9'>
 					<TableSingleEntity />
-					<hr/>
+					<hr />
 					{entitiesLayout}
 				</div>
 			</div>

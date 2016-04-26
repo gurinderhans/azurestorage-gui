@@ -21,3 +21,6 @@ node_modules
 
 ### Custom compiled files ###
 compiled.js
+
+### auth file ###
+creds.js
