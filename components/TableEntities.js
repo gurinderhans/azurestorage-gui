@@ -3,7 +3,7 @@ import React from 'react';
 var TablesList = React.createClass({
 	getInitialState() {
 		return {
-			tables: []
+			entities: []
 		}
 	},
 
@@ -11,7 +11,7 @@ var TablesList = React.createClass({
 		fetch(this.props.url)
 		.then(response => response.json())
 		.then(response => {
-			this.setState({tables: response.tables});
+			this.setState({entities: response.entities});
 		}).catch((error) => {
 			console.error('error:', error);
 		});
@@ -20,8 +20,8 @@ var TablesList = React.createClass({
 	render() {
 		return (
 			<ul>
-				{this.state.tables.map(table => {
-					return <li onClick={this.props.tableClick.bind(null, table)} key={table}>{table}</li>
+				{this.state.entities.map(entity => {
+					return <li key='s'>{JSON.stringify(entity)}</li>
 				})}
 			</ul>
 		);
