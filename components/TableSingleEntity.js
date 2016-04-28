@@ -1,13 +1,10 @@
 import React from 'react';
-import PropVal from './PropVal';
+import EntityItem from './EntityItem';
 
 const TableSingleEntity = React.createClass({
 	getInitialState() {
 		return {
-			entityItems: [
-				{propKey: 'PartitionKey', propVal: ''}
-				, {propKey: 'RowKey', propVal: ''}
-			]
+			entityItems: [{key: 'PartitionKey', val: ''}, {key: 'RowKey', val: ''}]
 		}
 	},
 
@@ -23,41 +20,41 @@ const TableSingleEntity = React.createClass({
 		if (props.entity) {
 			// TODO: proper key filtering here to hide special keys such as `.metadata`
 			this.setState({
-				entityItems: Object.keys(props.entity).map((propKey, i) => {
-					return {propKey, propVal: props.entity[propKey]._};
+				entityItems: Object.keys(props.entity).map((key, i) => {
+					console.log(key)
+					return {key, val: props.entity[key]._};
 				})
 			});
 		}
 	},
+
+	handleEntityItemChange(entityIndex, newKey, newVal){
+		this.state.entityItems[entityIndex] = {key: newKey, val: newVal};
+		this.setState({
+			entityItems: this.state.entityItems,
+		});
+	},
 	
-	addPropVal() {
-		const propvals = this.refs;
-		console.log(propvals);
-		// const newentityItems = this.state.entityItems;
-		// newentityItems[''] = '';
-		// this.setState({
-		// 	entityItems: newentityItems
-		// });
+	addEntityItem() {
+		this.state.entityItems.push({key:'', val:''});
+		this.setState({
+			entityItems: this.state.entityItems
+		})
+	},
+
+	onDeleteEntityItemHandler(entityIndex){
+		console.log('delete entity @index:', entityIndex);
 	},
 
 	saveEntity() {
-		console.log('saving:', this.state.entityItems);
-	},
-
-	handlePropValChange(propValFieldNum, propKey, propVal){
-		const newEntityState = this.state.entityItems;
-		newEntityState[propValFieldNum] = {propKey, propVal};
-
-		this.setState({
-			entityItems: newEntityState,
-		});
+		console.log('saving:', JSON.stringify(this.state.entityItems));
 	},
 
 	render() {
 		return (
 			<div>
 				<div>
-					<button onClick={this.addPropVal}>Add Prop Val</button>&nbsp;
+					<button onClick={this.addEntityItem}>Add Entity Item</button>&nbsp;
 					<button onClick={this.saveEntity}>Save Entity</button>&nbsp;
 					<button>Delete Entity</button>
 				</div>
@@ -66,11 +63,12 @@ const TableSingleEntity = React.createClass({
 						const props = {
 							key: i,
 							id: i,
-							propKey: item.propKey,
-							propVal: item.propVal,
-							onChange: this.handlePropValChange
+							entityItemKey: item.key,
+							entityItemVal: item.val,
+							onChangeHandler: this.handleEntityItemChange,
+							onDeleteHandler: this.onDeleteEntityItemHandler
 						};
-						return <PropVal {...props} />;
+						return <EntityItem {...props} />;
 					})}
 				</div>
 			</div>
