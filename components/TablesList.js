@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 const TablesList = React.createClass({
 	getInitialState() {
@@ -21,7 +21,7 @@ const TablesList = React.createClass({
 		return (
 			<ul>
 				{this.state.tables.map(table => {
-					return <li onClick={this.props.tableClick.bind(null, table)} key={table}>{table}</li>
+					return <li onClick={this.props.tableClickHandle.bind(null, table)} key={table}>{table}</li>
 				})}
 			</ul>
 		);

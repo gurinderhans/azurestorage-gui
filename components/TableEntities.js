@@ -1,5 +1,5 @@
-import React from 'react';
-import TableSingleEntity from './TableSingleEntity';
+import React from 'react'
+import TableSingleEntity from './TableSingleEntity'
 
 const TableEntities = React.createClass({
 	getInitialState() {
@@ -9,18 +9,18 @@ const TableEntities = React.createClass({
 	},
 
 	componentWillMount() {
-		if (this.props.tableName) {
-			this.fetchEntities(this.props);
-		}
+		this.fetchEntities(this.props);
 	},
 
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.tableName) {
-			this.fetchEntities(nextProps);
-		}
+		this.fetchEntities(nextProps);
 	},
 
 	fetchEntities(props) {
+		if (!props.tableName) {
+			return;
+		}
+
 		fetch(`/api/table/${props.tableName}`)
 		.then(response => response.json())
 		.then(response => {
@@ -28,6 +28,10 @@ const TableEntities = React.createClass({
 		}).catch(error => {
 			console.error('fetchEntities, error:', error);
 		});
+	},
+
+	addEntity() {
+		//
 	},
 
 	render() {

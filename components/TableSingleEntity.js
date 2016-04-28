@@ -1,5 +1,5 @@
-import React from 'react';
-import EntityItem from './EntityItem';
+import React from 'react'
+import EntityItem from './EntityItem'
 
 const TableSingleEntity = React.createClass({
 	getInitialState() {
@@ -50,10 +50,12 @@ const TableSingleEntity = React.createClass({
 	},
 
 	saveEntity() {
+		// TODO: this should callback to parent `TableEntities`
 		const savingData = {};
 		for (let eItem of this.state.entityItems) {
 			savingData[eItem.key] = eItem.val;
 		}
+
 		fetch(`/api/${this.props.tableName}/createEntity`, {
 			method: 'PUT',
 			headers: {
