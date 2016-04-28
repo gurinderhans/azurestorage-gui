@@ -50,7 +50,18 @@ const TableSingleEntity = React.createClass({
 	},
 
 	saveEntity() {
-		console.log('saving:', JSON.stringify(this.state.entityItems));
+		const savingData = {};
+		for (let eItem of this.state.entityItems) {
+			savingData[eItem.key] = eItem.val;
+		}
+		fetch(`/api/${this.props.tableName}/createEntity`, {
+			method: 'PUT',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(savingData)
+		});
 	},
 
 	render() {

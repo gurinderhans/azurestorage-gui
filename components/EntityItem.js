@@ -15,11 +15,11 @@ const EntityItem = React.createClass({
 		});
 	},
 
-	componentWillReceiveProps(newProps) {
-		if (this.state.key != newProps.entityItemKey || this.state.val != newProps.entityItemVal) {
+	componentWillReceiveProps(nextProps) {
+		if (this.state.key != nextProps.entityItemKey || this.state.val != nextProps.entityItemVal) {
 			this.setState({
-				key: newProps.entityItemKey,
-				val: newProps.entityItemVal
+				key: nextProps.entityItemKey,
+				val: nextProps.entityItemVal
 			});
 		}
 	},

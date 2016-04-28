@@ -1,3 +1,5 @@
+'use strict';
+
 const azure = require('azure-storage');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -39,6 +41,35 @@ router.get('/table/:tableName', (req, res) => {
 			res.json({ entities: result.entries });
 		}
 	});
+});
+
+router.route('/:tableName/createEntity').put((req, res) => {
+	if (!req.params.tableName) {
+		// res.json(400);
+		res.json(400, {'success': false});
+	} else {
+		// console.log('body:',req.body);
+
+		const azureEntity = {};
+		for (let key in req.body) {
+			console.log(typeof req.body[key]);
+			// if (req.body[key]) {
+			// 	//
+			// }
+		}
+
+		// tableService.insertEntity(req.params.tableName, req.body, (error, result, response) => {
+		// 	if (!error) {
+		// 		// result contains the ETag for the new entity
+		// 		console.log('result:',result);
+		// 		console.log('response:',response);
+		// 		res.json({'success': true});
+		// 	} else {
+		// 		console.log('error:', error);
+		// 	}
+		// });
+	}
+	
 });
 
 

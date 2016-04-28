@@ -11,11 +11,6 @@ const App = React.createClass({
 	},
 
 	render() {
-		let entitiesLayout = (<h3>Select a <b>table</b> from the <i>left</i>.</h3>);
-		if (this.state.currentTable) {
-			entitiesLayout = (<TableEntities url={`/api/table/${this.state.currentTable}`} />);
-		}
-
 		return (
 			<div className='row'>
 				<div className='col-md-3'>
@@ -23,11 +18,7 @@ const App = React.createClass({
 					<TablesList className='tablesList' tableClick={this.handleClick} url='/api/tables' />
 				</div>
 				<div className='col-md-9'>
-					<h1>Selected Table: {this.state.currentTable}</h1>
-					<hr />
-					<TableSingleEntity />
-					<hr />
-					{entitiesLayout}
+					<TableEntities tableName={this.state.currentTable} />
 				</div>
 			</div>
 		);
