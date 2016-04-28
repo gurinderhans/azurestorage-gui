@@ -39,11 +39,14 @@ const TableSingleEntity = React.createClass({
 		this.state.entityItems.push({key:'', val:''});
 		this.setState({
 			entityItems: this.state.entityItems
-		})
+		});
 	},
 
 	onDeleteEntityItemHandler(entityIndex){
-		console.log('delete entity @index:', entityIndex);
+		// also add to some delete entities variable so that we can tell server to delete those added entities
+		// OR, direct reqeust to server from here to delete this entity item
+		this.state.entityItems.splice(entityIndex, 1);
+		this.setState({ entityItems: this.state.entityItems });
 	},
 
 	saveEntity() {
