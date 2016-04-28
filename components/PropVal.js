@@ -24,16 +24,20 @@ const PropVal = React.createClass({
 		}
 	},
 
-	handlePropChange(event) {
+	handlePropKeyChange(event) {
 		this.setState({
 			propKey: event.target.value,
 		});
+
+		this.props.onChange(this.props.id, event.target.value, this.state.propVal);
 	},
 
-	handleValueChange(event) {
+	handleValKeyChange(event) {
 		this.setState({
 			propVal: event.target.value,
 		});
+
+		this.props.onChange(this.props.id, this.state.propKey, event.target.value);
 	},
 
 	render() {
@@ -42,8 +46,8 @@ const PropVal = React.createClass({
 
 		return (
 			<div>
-				<input type='text' placeholder='Prop' value={propKey} onChange={this.handlePropChange} />
-				<input type='text' placeholder='Value' value={propVal} onChange={this.handleValueChange} />
+				<input type='text' placeholder='Prop' value={propKey} onChange={this.handlePropKeyChange} />
+				<input type='text' placeholder='Value' value={propVal} onChange={this.handleValKeyChange} />
 			</div>
 		);
 	}
