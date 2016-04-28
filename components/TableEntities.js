@@ -1,7 +1,7 @@
 import React from 'react';
 import TableSingleEntity from './TableSingleEntity'
 
-var TableEntities = React.createClass({
+const TableEntities = React.createClass({
 	getInitialState() {
 		return {
 			entities: []

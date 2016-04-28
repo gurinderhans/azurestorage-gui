@@ -1,6 +1,6 @@
 import React from 'react';
 
-var TablesList = React.createClass({
+const TablesList = React.createClass({
 	getInitialState() {
 		return {
 			tables: []

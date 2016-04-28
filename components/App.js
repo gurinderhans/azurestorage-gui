@@ -3,7 +3,7 @@ import TablesList from './TablesList'
 import TableEntities from './TableEntities'
 import TableSingleEntity from './TableSingleEntity'
 
-var App = React.createClass({
+const App = React.createClass({
 	getInitialState() {
 		return {
 			currentTable: null
@@ -23,6 +23,8 @@ var App = React.createClass({
 					<TablesList className='tablesList' tableClick={this.handleClick} url='/api/tables' />
 				</div>
 				<div className='col-md-9'>
+					<h1>Selected Table: {this.state.currentTable}</h1>
+					<hr />
 					<TableSingleEntity />
 					<hr />
 					{entitiesLayout}
