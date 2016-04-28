@@ -43,10 +43,11 @@ const EntityItem = React.createClass({
 	render() {
 		const key = this.state.key || '';
 		const val = this.state.val || '';
+		const allowKeyEditing = (key === 'PartitionKey' || key === 'RowKey');
 
 		return (
 			<div>
-				<input type='text' placeholder='Prop' value={key} onChange={this.handlekeyChange} readOnly={false} />
+				<input type='text' placeholder='Prop' value={key} onChange={this.handlekeyChange} readOnly={allowKeyEditing} />
 				<input type='text' placeholder='Value' value={val} onChange={this.handleValKeyChange} />
 				<button onClick={this.props.onDeleteHandler.bind(null, this.props.id)}>Delete</button>
 			</div>
