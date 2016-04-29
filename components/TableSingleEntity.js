@@ -16,7 +16,7 @@ const TableSingleEntity = React.createClass({
 		newProps.entity && this.setState({ entityItems: newProps.entity });
 	},
 
-	handleEntityItemChange(entityIndex, newKey, newVal, newType){
+	handleEntityItemChange(entityIndex, newKey, newVal, newType) {
 		this.state.entityItems[entityIndex] = {key: newKey, val: newVal, type: newType};
 		this.setState({ entityItems: this.state.entityItems });
 	},
@@ -35,21 +35,22 @@ const TableSingleEntity = React.createClass({
 
 	saveEntity() {
 		// TODO: this should callback to parent `TableEntities`, to insert new entity into 'list'
+
 		const savingData = {};
 		for (let entityItem of this.state.entityItems) {
-			savingData[entityItem.key] = entityItem.val;
+			savingData[entityItem.key] = {val: entityItem.val, type: entityItem.type};
 		}
 
-		console.log('saving data:', savingData);
+		console.log('posting:', JSON.stringify(savingData));
 
-		// fetch(`/api/${this.props.tableName}/createEntity`, {
-		// 	method: 'PUT',
-		// 	headers: {
-		// 		'Accept': 'application/json',
-		// 		'Content-Type': 'application/json',
-		// 	},
-		// 	body: JSON.stringify(savingData)
-		// });
+		fetch(`/api/${this.props.tableName}/insertOrReplaceEntity`, {
+			method: 'PUT',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(savingData)
+		});
 	},
 
 	render() {

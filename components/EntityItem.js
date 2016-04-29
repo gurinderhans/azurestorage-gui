@@ -5,7 +5,7 @@ const EntityItem = React.createClass({
 		return {
 			key: '',
 			val: '',
-			type: ''
+			type: 'string'
 		}
 	},
 
@@ -36,6 +36,7 @@ const EntityItem = React.createClass({
 	},
 
 	handleValKeyChange(event) {
+		console.log('entityItemVal change:',event.target.value);
 		this.setState({
 			val: event.target.value,
 		});
@@ -44,6 +45,7 @@ const EntityItem = React.createClass({
 	},
 
 	handleTypeChange(event) {
+		// TODO: clear value on type change
 		this.setState({
 			type: event.target.value
 		});
@@ -57,10 +59,24 @@ const EntityItem = React.createClass({
 		const type = this.state.type || '';
 		const allowKeyTypeEditing = (key === 'PartitionKey' || key === 'RowKey');
 
+		let entityItemValField = (<input type='text' placeholder='Value' value={val} onChange={this.handleValKeyChange} />);
+		if (type === 'boolean') {
+			entityItemValField = (<select value={val} onChange={this.handleValKeyChange}>
+				<option value='true'>true</option>
+				<option value='false'>false</option>
+			</select>);
+		} else if (type === 'datetime') {
+			entityItemValField = (<input type='datetime' placeholder='Value' value={new Date(val)} onChange={this.handleValKeyChange} />);
+		} else if (type === 'number') {
+			entityItemValField = (<input type='number' placeholder='Value' value={val} onChange={this.handleValKeyChange} />);
+		}
+
 		return (
 			<div>
 				<input type='text' placeholder='Prop' value={key} onChange={this.handlekeyChange} readOnly={allowKeyTypeEditing} />
-				<input type='text' placeholder='Value' value={val} onChange={this.handleValKeyChange} />
+				
+				{entityItemValField}
+				
 				<select value={type} onChange={this.handleTypeChange} disabled={allowKeyTypeEditing}>
 					<option value='string'>String</option>
 					<option value='number'>Number</option>
