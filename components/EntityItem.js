@@ -57,7 +57,7 @@ const EntityItem = React.createClass({
 		const key = this.state.key || '';
 		const val = this.state.val || '';
 		const type = this.state.type || '';
-		const allowKeyTypeEditing = (key === 'PartitionKey' || key === 'RowKey');
+		const allowKeyTypeEditing = (key === 'PartitionKey' || key === 'RowKey' || key === 'Timestamp');
 
 		let entityItemValField = (<input type='text' placeholder='Value' value={val} onChange={this.handleValKeyChange} />);
 		if (type === 'boolean') {

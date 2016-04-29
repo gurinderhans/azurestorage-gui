@@ -33,7 +33,7 @@ const router = express.Router();
 router.get('/tables', (req, res) => {
 	tableService.listTablesSegmented(null, (error, result, resp) => {
 		if (error) {
-			res.json(400, { error: error });
+			res.status(400).json({ error: error })
 		} else {
 			res.json({ tables: result.entries });
 		}
@@ -45,7 +45,7 @@ router.get('/tables', (req, res) => {
 router.get('/table/:tableName', (req, res) => {
 	tableService.queryEntities(req.params.tableName, new azure.TableQuery(), null, (error, result, response) => {
 		if (error) {
-			res.json(400, { error: error });
+			res.status(400).json({ error: error });
 		} else {
 			res.json({ entities: result.entries });
 		}
@@ -76,7 +76,7 @@ router.route('/:tableName/insertOrReplaceEntity').put((req, res) => {
 			res.json({'success': true});
 		} else {
 			console.log('error:', error);
-			res.json(400, {'success': false});
+			res.status(400).json({'success': false});
 		}
 	});
 });

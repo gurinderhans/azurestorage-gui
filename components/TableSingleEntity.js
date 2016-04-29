@@ -75,6 +75,7 @@ const TableSingleEntity = React.createClass({
 						return <EntityItem {...props} />;
 					})}
 				</div>
+				<hr />
 			</div>
 		);
 	}

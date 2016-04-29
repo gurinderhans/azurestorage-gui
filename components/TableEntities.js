@@ -61,7 +61,6 @@ const TableEntities = React.createClass({
 				<div>
 					<h2>Selected table: {this.props.tableName}</h2>
 					<TableSingleEntity tableName={this.props.tableName} />
-					<hr/>
 					{this.state.entities.map((entity, i) => {
 						return (
 							<TableSingleEntity key={i} entity={entity} tableName={this.props.tableName} />
