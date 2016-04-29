@@ -4,66 +4,52 @@ import EntityItem from './EntityItem'
 const TableSingleEntity = React.createClass({
 	getInitialState() {
 		return {
-			entityItems: [{key: 'PartitionKey', val: ''}, {key: 'RowKey', val: ''}]
+			entityItems: [{key: 'PartitionKey', val: '', type: 'string'}, {key: 'RowKey', val: '', type: 'string'}]
 		}
 	},
 
 	componentWillMount() {
-		this.updateState(this.props);
+		this.props.entity && this.setState({ entityItems: this.props.entity });
 	},
 
 	componentWillReceiveProps(newProps) {
-		this.updateState(newProps);
+		newProps.entity && this.setState({ entityItems: newProps.entity });
 	},
 
-	updateState(props) {
-		if (props.entity) {
-			// TODO: proper key filtering here to hide special keys such as `.metadata`
-			this.setState({
-				entityItems: Object.keys(props.entity).map((key, i) => {
-					console.log(key)
-					return {key, val: props.entity[key]._};
-				})
-			});
-		}
-	},
-
-	handleEntityItemChange(entityIndex, newKey, newVal){
-		this.state.entityItems[entityIndex] = {key: newKey, val: newVal};
-		this.setState({
-			entityItems: this.state.entityItems,
-		});
+	handleEntityItemChange(entityIndex, newKey, newVal, newType){
+		this.state.entityItems[entityIndex] = {key: newKey, val: newVal, type: newType};
+		this.setState({ entityItems: this.state.entityItems });
 	},
 	
 	addEntityItem() {
 		this.state.entityItems.push({key:'', val:''});
-		this.setState({
-			entityItems: this.state.entityItems
-		});
+		this.setState({ entityItems: this.state.entityItems });
 	},
 
 	onDeleteEntityItemHandler(entityIndex){
 		// also add to some delete entities variable so that we can tell server to delete those added entities
 		// OR, direct reqeust to server from here to delete this entity item
-		this.state.entityItems.splice(entityIndex, 1);
-		this.setState({ entityItems: this.state.entityItems });
+		// this.state.entityItems.splice(entityIndex, 1);
+		// this.setState({ entityItems: this.state.entityItems });
 	},
 
 	saveEntity() {
-		// TODO: this should callback to parent `TableEntities`
+		// TODO: this should callback to parent `TableEntities`, to insert new entity into 'list'
 		const savingData = {};
-		for (let eItem of this.state.entityItems) {
-			savingData[eItem.key] = eItem.val;
+		for (let entityItem of this.state.entityItems) {
+			savingData[entityItem.key] = entityItem.val;
 		}
 
-		fetch(`/api/${this.props.tableName}/createEntity`, {
-			method: 'PUT',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(savingData)
-		});
+		console.log('saving data:', savingData);
+
+		// fetch(`/api/${this.props.tableName}/createEntity`, {
+		// 	method: 'PUT',
+		// 	headers: {
+		// 		'Accept': 'application/json',
+		// 		'Content-Type': 'application/json',
+		// 	},
+		// 	body: JSON.stringify(savingData)
+		// });
 	},
 
 	render() {
@@ -81,6 +67,7 @@ const TableSingleEntity = React.createClass({
 							id: i,
 							entityItemKey: item.key,
 							entityItemVal: item.val,
+							entityItemType: item.type,
 							onChangeHandler: this.handleEntityItemChange,
 							onDeleteHandler: this.onDeleteEntityItemHandler
 						};

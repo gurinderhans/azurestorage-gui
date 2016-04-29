@@ -24,13 +24,33 @@ const TableEntities = React.createClass({
 		fetch(`/api/table/${props.tableName}`)
 		.then(response => response.json())
 		.then(response => {
-			this.setState({entities: response.entities});
+			const mappedEntities = response.entities.map(entity => {
+				// FIXME: find better place to filter .metadata key?
+				return Object.keys(entity)
+						.filter(key => (key !== '.metadata'))
+						.map(key => {
+							// FIXME: move this into its own block
+							let etype = 'string'; // default we convert everything into string for easier parsing
+							if (entity[key].$) {
+								if (entity[key].$ === 'Edm.String') {
+									etype = 'string';
+								} else if (entity[key].$ === 'Edm.DateTime') {
+									etype = 'datetime';
+								}
+							} else {
+								etype = typeof entity[key]._;
+							}
+
+							return {key, val: entity[key]._, type: etype}
+						});
+			});
+			this.setState({entities: mappedEntities});
 		}).catch(error => {
 			console.error('fetchEntities, error:', error);
 		});
 	},
 
-	addEntity() {
+	addEntity(entity) {
 		//
 	},
 
