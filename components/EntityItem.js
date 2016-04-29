@@ -36,7 +36,6 @@ const EntityItem = React.createClass({
 	},
 
 	handleValKeyChange(event) {
-		console.log('entityItemVal change:',event.target.value);
 		this.setState({
 			val: event.target.value,
 		});
@@ -47,16 +46,17 @@ const EntityItem = React.createClass({
 	handleTypeChange(event) {
 		// TODO: clear value on type change
 		this.setState({
-			type: event.target.value
+			type: event.target.value,
+			val: ''
 		});
 
 		this.props.onChangeHandler(this.props.id, this.state.key, this.state.val, event.target.value);
 	},
 
 	render() {
-		const key = this.state.key || '';
-		const val = this.state.val || '';
-		const type = this.state.type || '';
+		const type = this.state.type;
+		const key = this.state.key;
+		const val = this.state.val;
 		const allowKeyTypeEditing = (key === 'PartitionKey' || key === 'RowKey' || key === 'Timestamp');
 
 		let entityItemValField = (<input type='text' placeholder='Value' value={val} onChange={this.handleValKeyChange} />);
