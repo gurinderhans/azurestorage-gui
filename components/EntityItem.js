@@ -66,7 +66,7 @@ const EntityItem = React.createClass({
 				<option value='false'>false</option>
 			</select>);
 		} else if (type === 'datetime') {
-			entityItemValField = (<input type='datetime' placeholder='Value' value={new Date(val)} onChange={this.handleValKeyChange} />);
+			entityItemValField = (<input type='datetime-local' value={new Date(val).toISOString().slice(0,-1)} onChange={this.handleValKeyChange} />);
 		} else if (type === 'number') {
 			entityItemValField = (<input type='number' placeholder='Value' value={val} onChange={this.handleValKeyChange} />);
 		}
