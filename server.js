@@ -18,6 +18,19 @@ const entGenTypesMap = {
 	'boolean': b => entGen.Boolean(typeof b === 'boolean' ? b : b.toLowerCase() === 'true')
 }
 
+let toAzure = (dataArr) => {
+	const azureEntity = {};
+	for (let entItem of dataArr) {
+		const tEntGen = entGenTypesMap[entItem.type];
+		if (tEntGen) {
+			azureEntity[entItem.key] = tEntGen(entItem.val);
+		} else {
+			// for 'unkown' types, soft convert to string
+			azureEntity[entItem.key] = entGen.String(entItem.val);
+		}
+	}
+}
+
 // configure body-parser to express
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -53,18 +66,8 @@ router.get('/table/:tableName', (req, res) => {
 });
 
 router.route('/:tableName/deleteEntity').put((req, res) => {
-	
-	// convert request data into azure 'compatible' data
-	const azureEntity = {};
-	for (let entItem of req.body) {
-		const tEntGen = entGenTypesMap[entItem.type];
-		if (tEntGen) {
-			azureEntity[entItem.key] = tEntGen(entItem.val);
-		} else {
-			// TOOD: throw error here or soft convert to string ??
-			azureEntity[entItem.key] = entGen.String(entItem.val);
-		}
-	}
+
+	const azureEntity = toAzure(req.body);
 
 	tableService.deleteEntity(req.params.tableName, azureEntity, (error, result, response) => {
 		if (!error) {
@@ -81,29 +84,15 @@ router.route('/:tableName/deleteEntity').put((req, res) => {
 
 router.route('/:tableName/insertOrReplaceEntity').put((req, res) => {
 	
-	// convert request data into azure 'compatible' data
-	const azureEntity = {};
-	for (let entItem of req.body) {
-		const tEntGen = entGenTypesMap[entItem.type];
-		if (tEntGen) {
-			azureEntity[entItem.key] = tEntGen(entItem.val);
-		} else {
-			// for 'unkown' types, soft convert to string
-			azureEntity[entItem.key] = entGen.String(entItem.val);
-		}
-	}
+	const azureEntity = toAzure(req.body);
 
 	console.log('azureEntity:',azureEntity);
 
 	tableService.insertOrReplaceEntity(req.params.tableName, azureEntity, (error, result, response) => {
 		if (!error) {
-			// result contains the ETag for the new entity, use for ??
-			console.log('result:',result);
-			console.log('response:',response);
 			res.json({success: true});
 		} else {
-			console.log('error:', error);
-			res.status(400).json({success: false});
+			res.status(400).json({error: error});
 		}
 	});
 });
