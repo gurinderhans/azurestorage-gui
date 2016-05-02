@@ -1,9 +1,9 @@
-import React from 'react';
+import React from 'react'
 import { render } from 'react-dom'
 
-import App from './components/App';
+import App from './components/App'
 
-import './assets/less/app.less';
+import './assets/less/app.less'
 
 render(
 	<App />,

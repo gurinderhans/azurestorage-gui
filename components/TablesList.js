@@ -8,7 +8,7 @@ const TablesList = React.createClass({
 	},
 
 	componentDidMount() {
-		fetch(this.props.url)
+		fetch('/api/tables')
 		.then(response => response.json())
 		.then(response => {
 			this.setState({tables: response.tables});
@@ -20,8 +20,8 @@ const TablesList = React.createClass({
 	render() {
 		return (
 			<ul>
-				{this.state.tables.map(table => {
-					return <li onClick={this.props.tableClickHandle.bind(null, table)} key={table}>{table}</li>
+				{this.state.tables.map((table, i) => {
+					return <li onClick={this.props.tableClickHandle.bind(null, table)} key={i}>{table}</li>
 				})}
 			</ul>
 		);

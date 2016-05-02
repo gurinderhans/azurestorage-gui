@@ -11,80 +11,78 @@ const EntityItem = React.createClass({
 
 	componentWillMount() {
 		this.setState({
-			key: this.props.entityItemKey,
-			val: this.props.entityItemVal,
-			type: this.props.entityItemType
+			key: this.props.entityItem.key,
+			val: this.props.entityItem.val,
+			type: this.props.entityItem.type
 		});
 	},
 
 	componentWillReceiveProps(nextProps) {
-		if (this.state.key != nextProps.entityItemKey || this.state.val != nextProps.entityItemVal || this.state.type != nextProps.entityItemType) {
-			this.setState({
-				key: nextProps.entityItemKey,
-				val: nextProps.entityItemVal,
-				type: nextProps.entityItemType
-			});
-		}
+		this.setState({
+			key: nextProps.entityItem.key,
+			val: nextProps.entityItem.val,
+			type: nextProps.entityItem.type
+		});
 	},
 
-	handlekeyChange(event) {
+	entityItemKeyChangeHandler(event) {
 		this.setState({
 			key: event.target.value,
 		});
 
-		this.props.onChangeHandler(this.props.id, event.target.value, this.state.val, this.state.type);
+		this.props.entityItemChangeHandler(this.props.id, event.target.value, this.state.val, this.state.type);
 	},
 
-	handleValKeyChange(event) {
+	entityItemValueChangeHandler(event) {
 		this.setState({
 			val: event.target.value,
 		});
 
-		this.props.onChangeHandler(this.props.id, this.state.key, event.target.value, this.state.type);
+		this.props.entityItemChangeHandler(this.props.id, this.state.key, event.target.value, this.state.type);
 	},
 
-	handleTypeChange(event) {
-		// TODO: clear value on type change
+	entityItemTypeChangeHandler(event) {
 		this.setState({
 			type: event.target.value,
-			val: ''
+			val: '',
 		});
 
-		this.props.onChangeHandler(this.props.id, this.state.key, this.state.val, event.target.value);
+		this.props.entityItemChangeHandler(this.props.id, this.state.key, this.state.val, event.target.value);
 	},
 
 	render() {
-		const type = this.state.type;
-		const key = this.state.key;
-		const val = this.state.val;
-		const allowKeyTypeEditing = (key === 'PartitionKey' || key === 'RowKey' || key === 'Timestamp');
+		const allowEntityItemInputEditing = (this.state.key === 'PartitionKey' || this.state.key === 'RowKey' || this.state.key === 'Timestamp');
 
-		let entityItemValField = (<input type='text' placeholder='Value' value={val} onChange={this.handleValKeyChange} />);
-		if (type === 'boolean') {
-			entityItemValField = (<select value={val} onChange={this.handleValKeyChange}>
-				<option value='true'>true</option>
-				<option value='false'>false</option>
-			</select>);
-		} else if (type === 'datetime') {
-			let date = val ? new Date(val) : new Date();
-			entityItemValField = (<input type='datetime-local' value={date.toISOString().slice(0,-1)} onChange={this.handleValKeyChange} />);
-		} else if (type === 'number') {
-			entityItemValField = (<input type='number' placeholder='Value' value={val} onChange={this.handleValKeyChange} />);
+		let entityItemValueField;
+		if (this.state.type === 'boolean') {
+			entityItemValueField = (
+				<select value={this.state.val} onChange={this.entityItemValueChangeHandler}>
+					<option value='true'>True</option>
+					<option value='false'>False</option>
+				</select>
+			);
+		} else if (this.state.type === 'datetime') {
+			let date = this.state.val ? new Date(this.state.val) : new Date();
+			entityItemValueField = (<input key={this.state.type} type='datetime-local' value={date.toISOString().slice(0,-1)} onChange={this.entityItemValueChangeHandler} />);
+		} else if (this.state.type === 'number') {
+			entityItemValueField = (<input key={this.state.type} type='number' placeholder='Value' value={this.state.val} onChange={this.entityItemValueChangeHandler} />);
+		} else {
+			entityItemValueField = (<input key={this.state.type} type='text' placeholder='Value' value={this.state.val} onChange={this.entityItemValueChangeHandler} />);
 		}
 
 		return (
 			<div>
-				<input type='text' placeholder='Prop' value={key} onChange={this.handlekeyChange} readOnly={allowKeyTypeEditing} />
+				<input type='text' placeholder='Prop' value={this.state.key} onChange={this.entityItemKeyChangeHandler} readOnly={allowEntityItemInputEditing} />
 				
-				{entityItemValField}
+				{entityItemValueField}
 				
-				<select value={type} onChange={this.handleTypeChange} disabled={allowKeyTypeEditing}>
+				<select value={this.state.type} onChange={this.entityItemTypeChangeHandler} disabled={allowEntityItemInputEditing}>
 					<option value='string'>String</option>
 					<option value='number'>Number</option>
 					<option value='datetime'>Date</option>
 					<option value='boolean'>Boolean</option>
 				</select>
-				<button onClick={this.props.onDeleteHandler.bind(null, this.props.id)}>Delete</button>
+				<button onClick={this.props.deleteEntityItemHandler.bind(null, this.props.id)}>Delete</button>
 			</div>
 		);
 	}

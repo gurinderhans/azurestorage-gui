@@ -1,7 +1,6 @@
 import React from 'react'
 import TablesList from './TablesList'
-import TableEntities from './TableEntities'
-import TableSingleEntity from './TableSingleEntity'
+import EntitiesList from './EntitiesList'
 
 const App = React.createClass({
 	getInitialState() {
@@ -15,10 +14,10 @@ const App = React.createClass({
 			<div className='row'>
 				<div className='col-md-3'>
 					<h3>Tables</h3>
-					<TablesList tableClickHandle={this.tableClickHandle} url='/api/tables' />
+					<TablesList tableClickHandle={this.tableClickHandle} />
 				</div>
 				<div className='col-md-9'>
-					<TableEntities tableName={this.state.currentTable} />
+					<EntitiesList tableName={this.state.currentTable} />
 				</div>
 			</div>
 		);

@@ -1,7 +1,7 @@
 import React from 'react'
-import TableSingleEntity from './TableSingleEntity'
+import Entity from './Entity'
 
-const TableEntities = React.createClass({
+const EntitiesList = React.createClass({
 	getInitialState() {
 		return {
 			entities: []
@@ -25,12 +25,10 @@ const TableEntities = React.createClass({
 		.then(response => response.json())
 		.then(response => {
 			const mappedEntities = response.entities.map(entity => {
-				// FIXME: find better place to filter .metadata key?
 				return Object.keys(entity)
-						.filter(key => (key !== '.metadata'))
+						.filter(key => (key !== '.metadata'))// FIXME: take this away from here...
 						.map(key => {
-							// FIXME: move this into its own block
-							let etype = 'string'; // default we convert everything into string for easier parsing
+							let etype;
 							if (entity[key].$) {
 								if (entity[key].$ === 'Edm.String') {
 									etype = 'string';
@@ -50,28 +48,31 @@ const TableEntities = React.createClass({
 		});
 	},
 
-	addEntity(entity) {
-		//
+	addNewEntityHandler(entity) {
+		this.state.entities.push(entity);
+		this.setState({entities: this.state.entities});
 	},
 
 	render() {
-		let entitiesLayout = (<h3>Select a <b>table</b> from the <i>left</i>.</h3>);
+		let entitiesLayout;
 		if (this.props.tableName) {
 			entitiesLayout = (
 				<div>
 					<h2>Selected table: {this.props.tableName}</h2>
-					<TableSingleEntity tableName={this.props.tableName} />
+					<Entity addNewEntityHandler={this.addNewEntityHandler} tableName={this.props.tableName} />
 					{this.state.entities.map((entity, i) => {
 						return (
-							<TableSingleEntity key={i} entity={entity} tableName={this.props.tableName} />
+							<Entity key={i} id={i} entity={entity} addNewEntityHandler={this.addNewEntityHandler} tableName={this.props.tableName} />
 						);
 					})}
 				</div>
 			);
+		} else {
+			entitiesLayout = (<h3>Select a <b><u>table</u></b> from the <i>list</i></h3>);
 		}
 
 		return entitiesLayout;
 	}
 });
 
-module.exports = TableEntities;
+module.exports = EntitiesList;
