@@ -88,7 +88,7 @@ router.route('/:tableName/insertOrReplaceEntity').put((req, res) => {
 		if (tEntGen) {
 			azureEntity[entItem.key] = tEntGen(entItem.val);
 		} else {
-			// TODO: throw error here or soft convert to string ??
+			// for 'unkown' types, soft convert to string
 			azureEntity[entItem.key] = entGen.String(entItem.val);
 		}
 	}
