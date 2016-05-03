@@ -10,8 +10,13 @@ const TablesList = React.createClass({
 	componentDidMount() {
 		fetch('/api/tables')
 		.then(response => response.json())
-		.then(response => {
-			this.setState({tables: response.tables});
+		.then(json => {
+			if (json.error) {
+				// something went wrong...
+				return;
+			}
+
+			this.setState({tables: json.result.entries});
 		}).catch((error) => {
 			console.error('error:', error);
 		});

@@ -18,7 +18,7 @@ const entGenTypesMap = {
 	'boolean': b => entGen.Boolean(typeof b === 'boolean' ? b : b.toLowerCase() === 'true')
 }
 
-let toAzure = (dataArr) => {
+const toAzure = (dataArr) => {
 	const azureEntity = {};
 	for (let entItem of dataArr) {
 		const tEntGen = entGenTypesMap[entItem.type];
@@ -29,6 +29,7 @@ let toAzure = (dataArr) => {
 			azureEntity[entItem.key] = entGen.String(entItem.val);
 		}
 	}
+	return azureEntity;
 }
 
 // configure body-parser to express
@@ -46,9 +47,9 @@ const router = express.Router();
 router.get('/tables', (req, res) => {
 	tableService.listTablesSegmented(null, (error, result, resp) => {
 		if (error) {
-			res.status(400).json({ error: error })
+			res.status(400).json({error: error, result: undefined});
 		} else {
-			res.json({ tables: result.entries });
+			res.json({error: undefined, result: result});
 		}
 	});
 });
@@ -58,9 +59,9 @@ router.get('/tables', (req, res) => {
 router.get('/table/:tableName', (req, res) => {
 	tableService.queryEntities(req.params.tableName, new azure.TableQuery(), null, (error, result, response) => {
 		if (error) {
-			res.status(400).json({ error: error });
+			res.status(400).json({error: error, result: undefined});
 		} else {
-			res.json({ entities: result.entries });
+			res.json({error: undefined, result: result});
 		}
 	});
 });
@@ -70,14 +71,10 @@ router.route('/:tableName/deleteEntity').put((req, res) => {
 	const azureEntity = toAzure(req.body);
 
 	tableService.deleteEntity(req.params.tableName, azureEntity, (error, result, response) => {
-		if (!error) {
-			// result contains the ETag for the new entity, use for ??
-			console.log('result:',result);
-			console.log('response:',response);
-			res.json({success: true});
+		if (error) {
+			res.status(400).json({error: error, result: undefined});
 		} else {
-			console.log('error:', error);
-			res.status(400).json({success: false});
+			res.json({error: undefined, result: result});
 		}
 	});
 });
@@ -86,13 +83,11 @@ router.route('/:tableName/insertOrReplaceEntity').put((req, res) => {
 	
 	const azureEntity = toAzure(req.body);
 
-	console.log('azureEntity:',azureEntity);
-
 	tableService.insertOrReplaceEntity(req.params.tableName, azureEntity, (error, result, response) => {
-		if (!error) {
-			res.json({success: true});
+		if (error) {
+			res.status(400).json({error: error, result: undefined});
 		} else {
-			res.status(400).json({error: error});
+			res.json({error: undefined, result: result});
 		}
 	});
 });

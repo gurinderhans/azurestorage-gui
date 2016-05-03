@@ -42,6 +42,11 @@ const Entity = React.createClass({
 		})
 		.then(response => response.json())
 		.then(json => {
+			if (json.error) {
+				// something went wrong
+				return;
+			}
+
 			if (this.props.id === undefined) {
 				this.props.addNewEntityHandler(this.state.entityItems);
 				this.setState(this.getInitialState());
@@ -60,6 +65,15 @@ const Entity = React.createClass({
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify(this.state.entityItems)
+		})
+		.then(response => response.json())
+		.then(json => {
+			if (this.props.id !== undefined) {
+				this.props.deleteEntityHandler(this.props.id);
+			}
+		})
+		.catch(error => {
+			console.warn('deleteEntity::ERR', error);
 		});
 	},
 

@@ -23,8 +23,13 @@ const EntitiesList = React.createClass({
 
 		fetch(`/api/table/${props.tableName}`)
 		.then(response => response.json())
-		.then(response => {
-			const mappedEntities = response.entities.map(entity => {
+		.then(json => {
+			if (json.error) {
+				// something went wrong...
+				return;
+			}
+
+			const mappedEntities = json.result.entries.map(entity => {
 				return Object.keys(entity)
 						.filter(key => (key !== '.metadata'))// FIXME: take this away from here...
 						.map(key => {
@@ -53,16 +58,21 @@ const EntitiesList = React.createClass({
 		this.setState({entities: this.state.entities});
 	},
 
+	deleteEntityHandler(entityIndex) {
+		this.state.entities.splice(entityIndex, 1);
+		this.setState({entities: this.state.entities});
+	},
+
 	render() {
 		let entitiesLayout;
 		if (this.props.tableName) {
 			entitiesLayout = (
 				<div>
 					<h2>Selected table: {this.props.tableName}</h2>
-					<Entity addNewEntityHandler={this.addNewEntityHandler} tableName={this.props.tableName} />
+					<Entity addNewEntityHandler={this.addNewEntityHandler} deleteEntityHandler={this.deleteEntityHandler} tableName={this.props.tableName} />
 					{this.state.entities.map((entity, i) => {
 						return (
-							<Entity key={i} id={i} entity={entity} addNewEntityHandler={this.addNewEntityHandler} tableName={this.props.tableName} />
+							<Entity key={i} id={i} entity={entity} addNewEntityHandler={this.addNewEntityHandler} deleteEntityHandler={this.deleteEntityHandler} tableName={this.props.tableName} />
 						);
 					})}
 				</div>
