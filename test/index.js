@@ -7,8 +7,9 @@ const app = require('../server');
 // MARK: Tests
 const TABLE_NAME = 'randomTable';
 
-// 1. create table
+// create table
 test('Create table', t => {
+
 	request(app)
 	.put(`/api/createTable/${TABLE_NAME}`)
 	.expect('Content-Type', /json/)
@@ -20,7 +21,7 @@ test('Create table', t => {
 	});
 });
 
-// 2. fetch table
+// fetch table
 test('Fetch Table', t => {
 	request(app)
 	.get(`/api/table/${TABLE_NAME}`)
@@ -33,7 +34,7 @@ test('Fetch Table', t => {
 	});
 });
 
-// 3. delete table
+// delete table
 test('Delete table', t => {
 	request(app)
 	.put(`/api/deleteTable/${TABLE_NAME}`)

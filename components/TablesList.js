@@ -59,7 +59,9 @@ const TablesList = React.createClass({
 				</div>
 				<ul>
 					{this.state.tables.map((table, i) => {
-						return <li onClick={this.props.tableClickHandle.bind(null, table)} key={i}>{table}</li>
+						return (
+							<li onClick={this.props.tableClickHandle.bind(null, table)} key={i}>{table} <button>Del</button></li>
+						);
 					})}
 				</ul>
 			</div>

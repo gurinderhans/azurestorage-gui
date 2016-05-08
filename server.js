@@ -49,9 +49,9 @@ const router = express.Router();
 router.get('/tables', (req, res) => {
 	tableService.listTablesSegmented(null, (error, result, resp) => {
 		if (error) {
-			res.status(400).json({error: error, result: undefined});
+			res.status(400).json({error: error});
 		} else {
-			res.json({error: undefined, result: result});
+			res.json({result: result});
 		}
 	});
 });
@@ -61,9 +61,9 @@ router.get('/tables', (req, res) => {
 router.get('/table/:tableName', (req, res) => {
 	tableService.queryEntities(req.params.tableName, new azure.TableQuery(), null, (error, result, response) => {
 		if (error) {
-			res.status(400).json({error: error, result: undefined});
+			res.status(400).json({error: error});
 		} else {
-			res.json({error: undefined, result: result});
+			res.json({result: result});
 		}
 	});
 });
@@ -71,9 +71,9 @@ router.get('/table/:tableName', (req, res) => {
 router.route('/createTable/:tableName').put((req, res) => {
 	tableService.createTableIfNotExists(req.params.tableName, function(error, result, response) {
 		if (error) {
-			res.status(400).json({error: error, result: undefined});
+			res.status(400).json({error: error});
 		} else {
-			res.json({error: undefined, result: result});
+			res.json({result: result});
 		}
 	});
 });
@@ -81,9 +81,9 @@ router.route('/createTable/:tableName').put((req, res) => {
 router.route('/deleteTable/:tableName').put((req, res) => {
 	tableService.deleteTableIfExists(req.params.tableName, function(error, result, response) {
 		if (error) {
-			res.status(400).json({error: error, result: undefined});
+			res.status(400).json({error: error});
 		} else {
-			res.json({error: undefined, result: result});
+			res.json({result: result});
 		}
 	});
 });
@@ -94,9 +94,9 @@ router.route('/:tableName/deleteEntity').put((req, res) => {
 
 	tableService.deleteEntity(req.params.tableName, azureEntity, (error, result, response) => {
 		if (error) {
-			res.status(400).json({error: error, result: undefined});
+			res.status(400).json({error: error});
 		} else {
-			res.json({error: undefined, result: result});
+			res.json({result: result});
 		}
 	});
 });
@@ -107,9 +107,9 @@ router.route('/:tableName/insertOrReplaceEntity').put((req, res) => {
 
 	tableService.insertOrReplaceEntity(req.params.tableName, azureEntity, (error, result, response) => {
 		if (error) {
-			res.status(400).json({error: error, result: undefined});
+			res.status(400).json({error: error});
 		} else {
-			res.json({error: undefined, result: result});
+			res.json({result: result});
 		}
 	});
 });

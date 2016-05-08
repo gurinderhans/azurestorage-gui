@@ -4,7 +4,7 @@
   "description": "GUI Interface for Microsoft AzureStorage",
   "main": "index.js",
   "scripts": {
-    "test": "node test",
+    "test": "tape test/*.js | tap-spec",
     "watch": "watchify -v -d -t lessify -t [ babelify --presets [ es2015 react ] ] client.js -o public/compiled.js",
     "build": "NODE_ENV=production browserify client.js -t lessify -t [ babelify --presets [ es2015 react ] ] | uglifyjs > public/compiled.js",
     "start": "node index.js"
@@ -29,6 +29,7 @@
     "browserify": "^13.0.1",
     "lessify": "^1.0.1",
     "supertest": "^1.2.0",
+    "tap-spec": "^4.1.1",
     "tape": "^4.5.1",
     "uglify-js": "^2.6.2",
     "watchify": "^3.7.0"
