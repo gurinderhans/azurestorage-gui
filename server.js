@@ -1,5 +1,7 @@
 'use strict';
 
+// TODO: refactor `server.js` and take out extra stuff
+
 const azure = require('azure-storage');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -66,6 +68,16 @@ router.get('/table/:tableName', (req, res) => {
 	});
 });
 
+router.route('/createTable/:tableName').put((req, res) => {
+	tableService.createTableIfNotExists(req.params.tableName, function(error, result, response) {
+		if (error) {
+			res.status(400).json({error: error, result: undefined});
+		} else {
+			res.json({error: undefined, result: result});
+		}
+	});
+});
+
 router.route('/:tableName/deleteEntity').put((req, res) => {
 
 	const azureEntity = toAzure(req.body);
@@ -94,4 +106,5 @@ router.route('/:tableName/insertOrReplaceEntity').put((req, res) => {
 
 
 app.use('/api', router);
-app.listen(8000);
+
+module.exports = app;

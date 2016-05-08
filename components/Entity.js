@@ -2,9 +2,9 @@ import React from 'react'
 import EntityItem from './EntityItem'
 
 const Entity = React.createClass({
-	getDefaultProps: function() {
+	getDefaultProps() {
 		return {
-			data: [{key: 'PartitionKey', val: '', type: ''}, {key: 'RowKey', val: '', type: ''}]
+			data: []
 		}
 	},
 

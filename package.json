@@ -2,15 +2,16 @@
   "name": "azurestorage-gui",
   "version": "1.0.0",
   "description": "GUI Interface for Microsoft AzureStorage",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "watchify -v -d -t lessify -t [ babelify --presets [ es2015 react ] ] index.js -o public/compiled.js",
-    "build": "NODE_ENV=production browserify index.js -t lessify -t [ babelify --presets [ es2015 react ] ] | uglifyjs > public/compiled.js"
+    "watch": "watchify -v -d -t lessify -t [ babelify --presets [ es2015 react ] ] client.js -o public/compiled.js",
+    "build": "NODE_ENV=production browserify client.js -t lessify -t [ babelify --presets [ es2015 react ] ] | uglifyjs > public/compiled.js",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gurinderhans/azurestorage-gui"
+    "url": "git+https://github.com/gurinderhans/azurestorage-gui.git"
   },
   "author": "gurinderhans",
   "license": "MIT",
@@ -27,7 +28,12 @@
     "babelify": "^7.2.0",
     "browserify": "^13.0.0",
     "lessify": "^1.0.1",
+    "supertest": "^1.2.0",
     "uglify-js": "^2.6.2",
     "watchify": "^3.7.0"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/gurinderhans/azurestorage-gui/issues"
+  },
+  "homepage": "https://github.com/gurinderhans/azurestorage-gui#readme"
 }

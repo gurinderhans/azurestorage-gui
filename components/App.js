@@ -5,7 +5,7 @@ import EntitiesList from './EntitiesList'
 const App = React.createClass({
 	getInitialState() {
 		return {
-			currentTable: null
+			selectedTable: null
 		}
 	},
 
@@ -13,18 +13,17 @@ const App = React.createClass({
 		return (
 			<div className='row'>
 				<div className='col-md-3'>
-					<h3>Tables</h3>
 					<TablesList tableClickHandle={this.tableClickHandle} />
 				</div>
 				<div className='col-md-9'>
-					<EntitiesList tableName={this.state.currentTable} />
+					<EntitiesList tableName={this.state.selectedTable} />
 				</div>
 			</div>
 		);
 	},
 
-	tableClickHandle(clickedTable) {
-		this.setState({currentTable: clickedTable});
+	tableClickHandle(selectedTable) {
+		this.setState({selectedTable});
 	}
 
 });
