@@ -49,18 +49,85 @@ const EntitiesList = React.createClass({
 			});
 			this.setState({entities: mappedEntities});
 		}).catch(error => {
-			console.error('fetchEntities, error:', error);
+			console.warn('fetchEntities, error:', error);
 		});
 	},
 
-	addNewEntityHandler(entity) {
-		this.state.entities.push(entity);
-		this.setState({entities: this.state.entities});
+	onEntityItemChangeHandler(newVal) {
+		this.state.entities[newVal.entityId][newVal.entityItemId] = newVal.item
+		this.setState({
+			entities: this.state.entities
+		});
 	},
 
-	deleteEntityHandler(entityIndex) {
-		this.state.entities.splice(entityIndex, 1);
-		this.setState({entities: this.state.entities});
+
+	onEntityItemDeleteHandler(entityId, entityItemId) {
+		this.state.entities[entityId].splice(entityItemId, 1);
+		this.setState({
+			entities: this.state.entities
+		});
+	},
+
+	onEntityItemAddHandler(entityId) {
+		this.state.entities[entityId].push({key: '', val: '', type: ''});
+		this.setState({
+			entities: this.state.entities
+		});
+	},
+
+	onEntitySaveHandler(entityId) {
+		fetch(`/api/${this.props.tableName}/insertOrReplaceEntity`, {
+			method: 'PUT',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(this.state.entities[entityId])
+		})
+		.then(response => response.json())
+		.then(json => {
+			if (json.error) {
+				// something went wrong
+				console.warn('error:',json.error);
+				return;
+			}
+		})
+		.catch(error => {
+			console.warn('insertOrReplaceEntity::ERR,', error);
+		});
+	},
+
+	onEntityDeleteHandler(entityId) {
+		fetch(`/api/${this.props.tableName}/deleteEntity`, {
+			method: 'PUT',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(this.state.entities[entityId])
+		})
+		.then(response => response.json())
+		.then(json => {
+			if (json.error) {
+				//
+				return;
+			}
+
+			this.state.entities.splice(entityId, 1);
+			this.setState({
+				entities: this.state.entities
+			});
+		})
+		.catch(error => {
+			console.warn('deleteEntity::ERR', error);
+		});
+	},
+
+	onEntityAddHandler() {
+		this.state.entities.unshift([{key: 'PartitionKey', val: '', type: 'string'}, {key: 'RowKey', val: '', type: 'string'}])
+		this.setState({
+			entities: this.state.entities
+		});
 	},
 
 	render() {
@@ -68,11 +135,10 @@ const EntitiesList = React.createClass({
 		if (this.props.tableName) {
 			entitiesLayout = (
 				<div>
-					<h2>Selected table: {this.props.tableName}</h2>
-					<Entity addNewEntityHandler={this.addNewEntityHandler} deleteEntityHandler={this.deleteEntityHandler} tableName={this.props.tableName} />
+					<h2>Selected table: {this.props.tableName}, <button onClick={this.onEntityAddHandler}>+</button></h2>
 					{this.state.entities.map((entity, i) => {
 						return (
-							<Entity key={i} id={i} entity={entity} addNewEntityHandler={this.addNewEntityHandler} deleteEntityHandler={this.deleteEntityHandler} tableName={this.props.tableName} />
+							<Entity key={i} data={entity} entityId={i} onEntitySave={this.onEntitySaveHandler} onEntityDelete={this.onEntityDeleteHandler} onEntityItemAdd={this.onEntityItemAddHandler} onEntityItemChange={this.onEntityItemChangeHandler} onEntityItemDelete={this.onEntityItemDeleteHandler} />
 						);
 					})}
 				</div>
