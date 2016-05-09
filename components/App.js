@@ -2,12 +2,14 @@ import React from 'react'
 import TablesList from './TablesList'
 import EntitiesList from './EntitiesList'
 
-const App = React.createClass({
-	getInitialState() {
-		return {
-			selectedTable: null
-		}
-	},
+export default class App extends React.Component {
+	
+	constructor(props) {
+		super(props);
+		this.state = {selectedTable: null};
+		
+		this.tableClickHandle = this.tableClickHandle.bind(this);
+	}
 
 	render() {
 		return (
@@ -20,12 +22,9 @@ const App = React.createClass({
 				</div>
 			</div>
 		);
-	},
+	}
 
 	tableClickHandle(selectedTable) {
 		this.setState({selectedTable});
 	}
-
-});
-
-module.exports = App;
+}

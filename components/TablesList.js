@@ -1,12 +1,14 @@
 import React from 'react'
 
-const TablesList = React.createClass({
-	getInitialState() {
-		return {
-			newTableName: '',
-			tables: []
-		}
-	},
+export default class TablesList extends React.Component {
+
+	constructor(props) {
+		super(props);
+		this.state = {newTableName: '', tables: []};
+		
+		this.onTableAddHandler = this.onTableAddHandler.bind(this);
+		this.fieldTableNameChange = this.fieldTableNameChange.bind(this);
+	}
 
 	componentDidMount() {
 		fetch('/api/tables')
@@ -21,7 +23,7 @@ const TablesList = React.createClass({
 		}).catch((error) => {
 			console.warn('error:', error);
 		});
-	},
+	}
 
 	onTableAddHandler() {
 		fetch(`/api/createTable/${this.state.newTableName}`, {
@@ -43,11 +45,11 @@ const TablesList = React.createClass({
 		.catch(error => {
 			console.warn('deleteEntity::ERR', error);
 		});
-	},
+	}
 
 	fieldTableNameChange(event) {
 		this.setState({newTableName: event.target.value});
-	},
+	}
 
 	render() {
 		return (
@@ -67,6 +69,4 @@ const TablesList = React.createClass({
 			</div>
 		);
 	}
-});
-
-module.exports = TablesList;
+}

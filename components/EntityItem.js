@@ -1,6 +1,16 @@
 import React from 'react'
 
-const EntityItem = React.createClass({
+export default class EntityItem extends React.Component {
+
+	constructor(props) {
+		super(props);
+		this.state = {selectedTable: null};
+		
+		this.fieldKeyOnChange = this.fieldKeyOnChange.bind(this);
+		this.fieldValOnChange = this.fieldValOnChange.bind(this);
+		this.fieldTypeOnChange = this.fieldTypeOnChange.bind(this);
+		this.onDelete = this.onDelete.bind(this);
+	}
 
 	fieldKeyOnChange(ev) {
 		this.props.onEntityItemChange({
@@ -12,7 +22,7 @@ const EntityItem = React.createClass({
 			entityItemId: this.props.entityItemId, 
 			entityId: this.props.entityId
 		})
-	},
+	}
 
 	fieldValOnChange(ev) {
 		this.props.onEntityItemChange({
@@ -24,7 +34,7 @@ const EntityItem = React.createClass({
 			entityItemId: this.props.entityItemId, 
 			entityId: this.props.entityId
 		})
-	},
+	}
 
 	fieldTypeOnChange(ev) {
 		this.props.onEntityItemChange({
@@ -36,11 +46,11 @@ const EntityItem = React.createClass({
 			entityItemId: this.props.entityItemId, 
 			entityId: this.props.entityId
 		})
-	},
+	}
 
 	onDelete() {
 		this.props.onEntityItemDelete(this.props.entityId ,this.props.entityItemId)
-	},
+	}
 
 	render() {
 
@@ -75,6 +85,4 @@ const EntityItem = React.createClass({
 			</div>
 		);
 	}
-});
-
-module.exports = EntityItem;
+}

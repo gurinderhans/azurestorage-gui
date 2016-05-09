@@ -1,12 +1,11 @@
 import React from 'react'
 import EntityItem from './EntityItem'
 
-const Entity = React.createClass({
-	getDefaultProps() {
-		return {
-			data: []
-		}
-	},
+export default class Entity extends React.Component {
+
+	constructor(props) {
+		super(props);
+	}
 
 	render() {
 		return (
@@ -25,6 +24,6 @@ const Entity = React.createClass({
 			</div>
 		);
 	}
-});
+}
 
-module.exports = Entity;
+Entity.defaultProps = { data: [] };

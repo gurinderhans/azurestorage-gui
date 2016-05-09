@@ -1,20 +1,26 @@
 import React from 'react'
 import Entity from './Entity'
 
-const EntitiesList = React.createClass({
-	getInitialState() {
-		return {
-			entities: []
-		}
-	},
+export default class EntitiesList extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {entities: []};
+		
+		this.onEntityItemChangeHandler = this.onEntityItemChangeHandler.bind(this);
+		this.onEntityItemDeleteHandler = this.onEntityItemDeleteHandler.bind(this);
+		this.onEntityItemAddHandler = this.onEntityItemAddHandler.bind(this);
+		this.onEntitySaveHandler = this.onEntitySaveHandler.bind(this);
+		this.onEntityDeleteHandler = this.onEntityDeleteHandler.bind(this);
+		this.onEntityAddHandler = this.onEntityAddHandler.bind(this);
+	}
 
 	componentWillMount() {
 		this.fetchEntities(this.props);
-	},
+	}
 
 	componentWillReceiveProps(nextProps) {
 		this.fetchEntities(nextProps);
-	},
+	}
 
 	fetchEntities(props) {
 		if (!props.tableName) {
@@ -51,14 +57,14 @@ const EntitiesList = React.createClass({
 		}).catch(error => {
 			console.warn('fetchEntities, error:', error);
 		});
-	},
+	}
 
 	onEntityItemChangeHandler(newVal) {
 		this.state.entities[newVal.entityId][newVal.entityItemId] = newVal.item
 		this.setState({
 			entities: this.state.entities
 		});
-	},
+	}
 
 
 	onEntityItemDeleteHandler(entityId, entityItemId) {
@@ -66,14 +72,14 @@ const EntitiesList = React.createClass({
 		this.setState({
 			entities: this.state.entities
 		});
-	},
+	}
 
 	onEntityItemAddHandler(entityId) {
 		this.state.entities[entityId].push({key: '', val: '', type: ''});
 		this.setState({
 			entities: this.state.entities
 		});
-	},
+	}
 
 	onEntitySaveHandler(entityId) {
 		fetch(`/api/${this.props.tableName}/insertOrReplaceEntity`, {
@@ -95,7 +101,7 @@ const EntitiesList = React.createClass({
 		.catch(error => {
 			console.warn('insertOrReplaceEntity::ERR,', error);
 		});
-	},
+	}
 
 	onEntityDeleteHandler(entityId) {
 		fetch(`/api/${this.props.tableName}/deleteEntity`, {
@@ -121,14 +127,14 @@ const EntitiesList = React.createClass({
 		.catch(error => {
 			console.warn('deleteEntity::ERR', error);
 		});
-	},
+	}
 
 	onEntityAddHandler() {
 		this.state.entities.unshift([{key: 'PartitionKey', val: '', type: 'string'}, {key: 'RowKey', val: '', type: 'string'}])
 		this.setState({
 			entities: this.state.entities
 		});
-	},
+	}
 
 	render() {
 		let entitiesLayout;
@@ -149,6 +155,4 @@ const EntitiesList = React.createClass({
 
 		return entitiesLayout;
 	}
-});
-
-module.exports = EntitiesList;
+}
