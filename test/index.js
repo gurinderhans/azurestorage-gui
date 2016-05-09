@@ -4,45 +4,102 @@ const test = require('tape');
 const request = require('supertest');
 const app = require('../server');
 
-// MARK: Tests
-const TABLE_NAME = 'randomTable';
 
-// create table
-test('Create table', t => {
+/// MARK: - Helper functions
 
+function createTableRequest(tableName, cb) {
 	request(app)
-	.put(`/api/createTable/${TABLE_NAME}`)
+	.put(`/api/createTable/${tableName}`)
 	.expect('Content-Type', /json/)
 	.expect(200)
-	.end((err, res) => {
-		t.error(err, 'No error');
-		t.ok(res.body.result, 'Create table successful.');
-		t.end();
-	});
-});
+	.end(cb);
+}
 
-// fetch table
-test('Fetch Table', t => {
+function deleteTableRequest(tableName, cb) {
 	request(app)
-	.get(`/api/table/${TABLE_NAME}`)
+	.put(`/api/deleteTable/${tableName}`)
 	.expect('Content-Type', /json/)
 	.expect(200)
-	.end((err, res) => {
-		t.error(err, 'No error');
-		t.equal(res.body.result.entries.length, 0, 'No. results match 0');
-		t.end();
-	});
-});
+	.end(cb);
+}
 
-// delete table
-test('Delete table', t => {
+function addEntityRequest(tableName, partitionKey, rowKey, addonItems=[], cb) {
+	
+	const entity = [{key: 'PartitionKey', val: partitionKey, 'type': 'string'}, {key: 'RowKey', val: rowKey, 'type': 'string'}].concat(addonItems);
+
 	request(app)
-	.put(`/api/deleteTable/${TABLE_NAME}`)
+	.put(`/api/${tableName}/insertOrReplaceEntity`)
+	.set('Accept', 'application/json')
+	.set('Content-Type', 'application/json')
+	.send(entity)
 	.expect('Content-Type', /json/)
 	.expect(200)
-	.end((err, res) => {
-		t.error(err, 'No error');
-		t.ok(res.body.result, 'Delete table successful.');
-		t.end();
+	.end(cb);
+}
+
+function deleteEntityRequest(tableName, partitionKey, rowKey, cb) {
+	request(app)
+	.put(`/api/${tableName}/deleteEntity`)
+	.set('Accept', 'application/json')
+	.set('Content-Type', 'application/json')
+	.send([{key: 'PartitionKey', val: partitionKey, 'type': 'string'}, {key: 'RowKey', val: rowKey, 'type': 'string'}])
+	.expect('Content-Type', /json/)
+	.expect(200)
+	.end(cb);
+}
+
+
+/// MARK: - Tests Fixtures
+
+const TEST_AddDeleteEntity = (TABLE_NAME) => {
+
+	test(`Create table: ${TABLE_NAME}`, assert => {
+		createTableRequest(TABLE_NAME, (err, res) => {
+			assert.error(res.body.error, 'No error');
+			assert.ok(res.body.result, 'Create table successful');
+			assert.end();
+		});
 	});
-});
+
+	test('Add entity to table', assert => {
+		addEntityRequest(TABLE_NAME, 'abc', 'def', [{key: 'customKey', val: 'customVal', 'type': 'string'}], (err, res) => {
+			assert.error(res.body.error, 'No error');
+			assert.notEqual(res.body.result['.metadata'].etag, undefined, 'Entity Added');
+			assert.end();
+		});
+	});
+
+	test('Delete entity from table', assert => {
+		deleteEntityRequest(TABLE_NAME, 'abc', 'def', (err, res) => {
+			assert.error(res.body.error, 'No error');
+			assert.equal(res.body.result.isSuccessful, true, 'Entity Deleted');
+			assert.end();
+		});
+	});
+
+	test(`Delete table: ${TABLE_NAME}`, assert => {
+		deleteTableRequest(TABLE_NAME, (err, res) => {
+			assert.error(res.body.error, 'No error');
+			assert.ok(res.body.result, 'Delete table successful');
+			assert.end();
+		});
+	});
+};
+
+const TEST_CreateDeleteEmptyTable = () => {
+	test(`Create table with no name`, assert => {
+		createTableRequest('', (err, res) => {
+			assert.error(res.body.error, 'No error');
+			assert.notOk(res.body.result, 'Create table failed');
+			assert.end();
+		});
+	});
+};
+
+
+/// MARK: - Running Tests
+
+TEST_AddDeleteEntity('randomTable');
+
+TEST_CreateDeleteEmptyTable();
+
