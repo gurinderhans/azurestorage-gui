@@ -77,7 +77,7 @@ router.route('/createTable/:tableName').put((req, res) => {
 			}
 		});
 	} catch (error) {
-		res.status(400).json({error: error});
+		res.status(400).json({error: {name: error.name, message: error.message}});
 	}
 });
 
@@ -105,16 +105,20 @@ router.route('/:tableName/deleteEntity').put((req, res) => {
 });
 
 router.route('/:tableName/insertOrReplaceEntity').put((req, res) => {
-	
-	const azureEntity = toAzure(req.body);
 
-	tableService.insertOrReplaceEntity(req.params.tableName, azureEntity, (error, result, response) => {
-		if (error) {
-			res.status(400).json({error: error});
-		} else {
-			res.json({result: result});
-		}
-	});
+	try {
+		const azureEntity = toAzure(req.body);
+
+		tableService.insertOrReplaceEntity(req.params.tableName, azureEntity, (error, result, response) => {
+			if (error) {
+				res.status(400).json({error: error});
+			} else {
+				res.json({result: result});
+			}
+		});
+	} catch (error) {
+		res.status(400).json({error: {name: error.name, message: error.message}});
+	}
 });
 
 
