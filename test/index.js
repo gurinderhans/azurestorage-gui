@@ -86,9 +86,29 @@ const TEST_AddDeleteEntity = (TABLE_NAME) => {
 	});
 };
 
-const TEST_CreateDeleteEmptyTable = () => {
+const TEST_CreateTableWithInvalidName = () => {
+
+	const randomString = (n) => {let r="",t="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";for(var o=0;n>o;o++)r+=t.charAt(Math.floor(Math.random()*t.length));return r};
+	
+	// < 3 chars
+	test('Test table names < 3 chars', assert => {
+		createTableRequest('aa', (err, res) => {
+			assert.equal(res.body.error.name, 'ArgumentError', 'Create table failed');
+			assert.end();
+		});
+	});
+
+	// > 63 chars
+	test('Test table names > 63 chars', assert => {
+		createTableRequest(randomString(64), (err, res) => {
+			assert.equal(res.body.error.name, 'ArgumentError', 'Create table failed');
+			assert.end();
+		});
+	});
+
+	// no name
 	test(`Create table with no name`, assert => {
-		createTableRequest('', (err, res) => {
+		createTableRequest('/', (err, res) => {
 			assert.error(res.body.error, 'No error');
 			assert.notOk(res.body.result, 'Create table failed');
 			assert.end();
@@ -99,7 +119,14 @@ const TEST_CreateDeleteEmptyTable = () => {
 
 /// MARK: - Running Tests
 
+TEST_CreateTableWithInvalidName();
+
 TEST_AddDeleteEntity('randomTable');
 
-TEST_CreateDeleteEmptyTable();
+
+
+
+// @end ----------------
+
+
 
