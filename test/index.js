@@ -24,7 +24,6 @@ function deleteTableRequest(tableName, cb) {
 }
 
 function addEntityRequest(tableName, partitionKey, rowKey, addonItems=[], cb) {
-	
 	const entity = [{key: 'PartitionKey', val: partitionKey, 'type': 'string'}, {key: 'RowKey', val: rowKey, 'type': 'string'}].concat(addonItems);
 
 	request(app)
@@ -93,6 +92,7 @@ const TEST_CreateTableWithInvalidName = () => {
 	// < 3 chars
 	test('Test table names < 3 chars', assert => {
 		createTableRequest('aa', (err, res) => {
+			assert.equal(res.status, 400, 'Returned 400 OK.')
 			assert.equal(res.body.error.name, 'ArgumentError', 'Create table failed');
 			assert.end();
 		});
@@ -101,6 +101,7 @@ const TEST_CreateTableWithInvalidName = () => {
 	// > 63 chars
 	test('Test table names > 63 chars', assert => {
 		createTableRequest(randomString(64), (err, res) => {
+			assert.equal(res.status, 400, 'Returned 400 OK.')
 			assert.equal(res.body.error.name, 'ArgumentError', 'Create table failed');
 			assert.end();
 		});
@@ -142,14 +143,56 @@ const TEST_DeleteGhostEntity = (TABLE_NAME) => {
 	});
 };
 
+const TEST_AddInvalidEntity = (TABLE_NAME) => {
+
+	test(`Create table: ${TABLE_NAME}`, assert => {
+		createTableRequest(TABLE_NAME, (err, res) => {
+			assert.error(res.body.error, 'No error');
+			assert.ok(res.body.result, 'Create table successful');
+			assert.end();
+		});
+	});
+
+	test('Add entity `null` partitionKey', assert => {
+		addEntityRequest(TABLE_NAME, undefined, '', undefined, (err, res) => {
+			assert.equal(res.status, 400, 'Got TypeError, addEntity failed.');
+			assert.end();
+		});
+	});
+
+	test('Add entity `null` rowKey', assert => {
+		addEntityRequest(TABLE_NAME, '', null, undefined, (err, res) => {
+			assert.equal(res.status, 400, 'Got TypeError, addEntity failed.');
+			assert.end();
+		});
+	});
+
+	test('Add entity `null` tableName', assert => {
+		addEntityRequest(null, '', '', undefined, (err, res) => {
+			assert.equal(res.status, 400, 'No table found, addEntity failed.');
+			assert.end();
+		});
+	});
+
+	test(`Delete table: ${TABLE_NAME}`, assert => {
+		deleteTableRequest(TABLE_NAME, (err, res) => {
+			assert.error(res.body.error, 'No error');
+			assert.ok(res.body.result, 'Delete table successful');
+			assert.end();
+		});
+	});
+};
+
 
 /// MARK: - Running Tests
 
 TEST_CreateTableWithInvalidName();
 
-TEST_AddDeleteEntity('randomTable');
+TEST_AddDeleteEntity('random0');
 
-TEST_DeleteGhostEntity('randomTable2');
+TEST_DeleteGhostEntity('random1');
+
+TEST_AddInvalidEntity('random2');
 
 
 // @end ----------------
