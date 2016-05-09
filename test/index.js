@@ -88,7 +88,7 @@ const TEST_AddDeleteEntity = (TABLE_NAME) => {
 
 const TEST_CreateTableWithInvalidName = () => {
 
-	const randomString = (n) => {let r="",t="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";for(var o=0;n>o;o++)r+=t.charAt(Math.floor(Math.random()*t.length));return r};
+	const randomString = (n) => {let r="",t="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";for(let o=0;n>o;o++)r+=t.charAt(Math.floor(Math.random()*t.length));return r};
 	
 	// < 3 chars
 	test('Test table names < 3 chars', assert => {
@@ -116,6 +116,32 @@ const TEST_CreateTableWithInvalidName = () => {
 	});
 };
 
+const TEST_DeleteGhostEntity = (TABLE_NAME) => {
+
+	test(`Create table: ${TABLE_NAME}`, assert => {
+		createTableRequest(TABLE_NAME, (err, res) => {
+			assert.error(res.body.error, 'No error');
+			assert.ok(res.body.result, 'Create table successful');
+			assert.end();
+		});
+	});
+
+	test('Delete ghost entity from table', assert => {
+		deleteEntityRequest(TABLE_NAME, 'abc', 'def', (err, res) => {
+			assert.equal(res.body.error.statusCode, 404, 'Delete entity failed');
+			assert.end();
+		});
+	});
+
+	test(`Delete table: ${TABLE_NAME}`, assert => {
+		deleteTableRequest(TABLE_NAME, (err, res) => {
+			assert.error(res.body.error, 'No error');
+			assert.ok(res.body.result, 'Delete table successful');
+			assert.end();
+		});
+	});
+};
+
 
 /// MARK: - Running Tests
 
@@ -123,7 +149,7 @@ TEST_CreateTableWithInvalidName();
 
 TEST_AddDeleteEntity('randomTable');
 
-
+TEST_DeleteGhostEntity('randomTable2');
 
 
 // @end ----------------
