@@ -1,8 +1,5 @@
 'use strict';
 
-// TODO: refactor `server.js` and take out extra stuff
-
-
 // Load env vars
 require('env2')('config.env');
 
@@ -10,7 +7,6 @@ const azure = require('azure-storage');
 const express = require('express');
 const bodyParser = require('body-parser');
 
-// TODO: add template for `config.env` file
 const tableService = azure.createTableService(process.env.ACCOUNT_NAME, process.env.SECRET_KEY);
 
 const app = express();
@@ -44,7 +40,6 @@ app.use(bodyParser.json());
 
 // client side served from public directory
 app.use(express.static(__dirname + '/public'));
-
 
 // api router
 const router = express.Router();
