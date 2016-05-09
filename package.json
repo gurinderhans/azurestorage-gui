@@ -4,7 +4,8 @@
   "description": "GUI Interface for Microsoft AzureStorage",
   "main": "index.js",
   "scripts": {
-    "test": "tape test/*.js | tap-spec",
+    "test": "istanbul cover tape test/*.js | tap-spec",
+    "travistest": "istanbul cover --report lcovonly tape test/*.js && cat ./coverage/lcov.info | coveralls",
     "watch": "watchify -v -d -t lessify -t [ babelify --presets [ es2015 react ] ] client.js -o public/compiled.js",
     "build": "NODE_ENV=production browserify client.js -t lessify -t [ babelify --presets [ es2015 react ] ] | uglifyjs > public/compiled.js",
     "start": "node index.js"
@@ -28,6 +29,7 @@
     "babel-preset-react": "^6.5.0",
     "babelify": "^7.3.0",
     "browserify": "^13.0.1",
+    "coveralls": "^2.11.9",
     "istanbul": "^0.4.3",
     "lessify": "^1.0.1",
     "supertest": "^1.2.0",
