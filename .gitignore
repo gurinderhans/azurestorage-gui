@@ -24,3 +24,4 @@ compiled.js
 
 ### auth file ###
 creds.js
+config.env

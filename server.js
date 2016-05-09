@@ -2,12 +2,16 @@
 
 // TODO: refactor `server.js` and take out extra stuff
 
+
+// Load env vars
+require('env2')('config.env');
+
 const azure = require('azure-storage');
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const creds = require('./creds');
-const tableService = azure.createTableService(creds.accountName, creds.secretKey);
+// TODO: add template for `config.env` file
+const tableService = azure.createTableService(process.env.ACCOUNT_NAME, process.env.SECRET_KEY);
 
 const app = express();
 
