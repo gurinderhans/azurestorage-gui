@@ -119,7 +119,7 @@ const TEST_CreateTableWithInvalidName = () => {
 
 /// MARK: - Running Tests
 
-TEST_CreateTableWithInvalidName();
+// TEST_CreateTableWithInvalidName();
 
 TEST_AddDeleteEntity('randomTable');
 
