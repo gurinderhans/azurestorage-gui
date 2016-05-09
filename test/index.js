@@ -174,6 +174,13 @@ const TEST_AddInvalidEntity = (TABLE_NAME) => {
 		});
 	});
 
+	test('Add entity empty tableName', assert => {
+		addEntityRequest('', '', '', undefined, (err, res) => {
+			assert.equal(res.status, 404, 'Malformed URL, 404, addEntity failed.');
+			assert.end();
+		});
+	});
+
 	test(`Delete table: ${TABLE_NAME}`, assert => {
 		deleteTableRequest(TABLE_NAME, (err, res) => {
 			assert.error(res.body.error, 'No error');
