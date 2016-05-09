@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "istanbul cover tape test/*.js | tap-spec",
-    "travistest": "istanbul cover --report lcovonly tape test/*.js && cat ./coverage/lcov.info | coveralls",
+    "travistest": "istanbul cover --report lcovonly tape test/*.js | tap-spec && cat ./coverage/lcov.info | coveralls",
     "watch": "watchify -v -d -t lessify -t [ babelify --presets [ es2015 react ] ] client.js -o public/compiled.js",
     "build": "NODE_ENV=production browserify client.js -t lessify -t [ babelify --presets [ es2015 react ] ] | uglifyjs > public/compiled.js",
     "start": "node index.js"
