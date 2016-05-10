@@ -81,6 +81,15 @@ const TEST_CreateTable = () => {
 	});
 	deleteTableRequest('validTableName');
 
+	createTableRequest('newTable');
+	test('Create pre-existing table w/ valid name', assert => {
+		createTableRequest('newTable', (err, res) => {
+			assert.error(res.body.error, 'No error');
+			assert.ok(res.body.result, 'Create table OK.');
+			assert.end();
+		});
+	});
+
 	test('Create table w/ name < 3 chars', assert => {
 		createTableRequest('aa', (err, res) => {
 			assert.equal(res.status, 400, 'Returned 400 OK.')
@@ -113,6 +122,14 @@ const TEST_DeleteTable = () => {
 		deleteTableRequest('someValidName', (err, res) => {
 			assert.error(res.body.error, 'No error');
 			assert.ok(res.body.result, 'Delete table OK.');
+			assert.end();
+		});
+	});
+
+	test('Delete non-existing table w/ valid name', assert => {
+		deleteTableRequest('someValidName', (err, res) => {
+			assert.error(res.body.error, 'No error');
+			assert.equal(res.body.result, false, 'Delete table OK.');
 			assert.end();
 		});
 	});
