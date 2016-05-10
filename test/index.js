@@ -25,6 +25,32 @@ function deleteTableRequest(tableName, cb=() => {}) {
 	.end(cb);
 }
 
+function createEntityRequest(tableName, partitionKey, rowKey, addonItems=[], cb=() => {}) {
+	const entity = [{key: 'PartitionKey', val: partitionKey, 'type': 'string'}, {key: 'RowKey', val: rowKey, 'type': 'string'}].concat(addonItems);
+
+	request(app)
+	.put(`/api/insertOrReplaceEntity`)
+	.query({ tableName: tableName })
+	.set('Accept', 'application/json')
+	.set('Content-Type', 'application/json')
+	.send(entity)
+	.expect('Content-Type', /json/)
+	.expect(200)
+	.end(cb);
+}
+
+function deleteEntityRequest(tableName, partitionKey, rowKey, cb=() => {}) {
+	request(app)
+	.put(`/api/deleteEntity`)
+	.query({ tableName: tableName })
+	.set('Accept', 'application/json')
+	.set('Content-Type', 'application/json')
+	.send([{key: 'PartitionKey', val: partitionKey, 'type': 'string'}, {key: 'RowKey', val: rowKey, 'type': 'string'}])
+	.expect('Content-Type', /json/)
+	.expect(200)
+	.end(cb);
+}
+
 
 // FIXME: fix url route parmams for fns below
 function fetchTableEntitiesRequest(tableName, cb=() => {}) {
@@ -43,30 +69,6 @@ function fetchTables(cb=() => {}) {
 	.end(cb);
 }
 
-function addEntityRequest(tableName, partitionKey, rowKey, addonItems=[], cb=() => {}) {
-	const entity = [{key: 'PartitionKey', val: partitionKey, 'type': 'string'}, {key: 'RowKey', val: rowKey, 'type': 'string'}].concat(addonItems);
-
-	request(app)
-	.put(`/api/${tableName}/insertOrReplaceEntity`)
-	.set('Accept', 'application/json')
-	.set('Content-Type', 'application/json')
-	.send(entity)
-	.expect('Content-Type', /json/)
-	.expect(200)
-	.end(cb);
-}
-
-function deleteEntityRequest(tableName, partitionKey, rowKey, cb=() => {}) {
-	request(app)
-	.put(`/api/${tableName}/deleteEntity`)
-	.set('Accept', 'application/json')
-	.set('Content-Type', 'application/json')
-	.send([{key: 'PartitionKey', val: partitionKey, 'type': 'string'}, {key: 'RowKey', val: rowKey, 'type': 'string'}])
-	.expect('Content-Type', /json/)
-	.expect(200)
-	.end(cb);
-}
-
 
 /// MARK: - Tests Fixtures
 
@@ -77,16 +79,18 @@ const TEST_CreateTable = () => {
 			assert.error(res.body.error, 'No error');
 			assert.ok(res.body.result, 'Create table OK.');
 			assert.end();
+
+			deleteTableRequest('validTableName'); // CLEANUP
 		});
 	});
-	deleteTableRequest('validTableName');
 
-	createTableRequest('newTable');
-	test('Create pre-existing table w/ valid name', assert => {
-		createTableRequest('newTable', (err, res) => {
-			assert.error(res.body.error, 'No error');
-			assert.ok(res.body.result, 'Create table OK.');
-			assert.end();
+	createTableRequest('newTable', () => {
+		test('Create pre-existing table w/ valid name', assert => {
+			createTableRequest('newTable', (err, res) => {
+				assert.error(res.body.error, 'No error');
+				assert.ok(res.body.result, 'Create table OK.');
+				assert.end();
+			});
 		});
 	});
 
@@ -117,17 +121,18 @@ const TEST_CreateTable = () => {
 
 const TEST_DeleteTable = () => {
 
-	createTableRequest('someValidName');
-	test('Delete table w/ valid name', assert => {
-		deleteTableRequest('someValidName', (err, res) => {
-			assert.error(res.body.error, 'No error');
-			assert.ok(res.body.result, 'Delete table OK.');
-			assert.end();
+	createTableRequest('someValidName', () => {
+		test('Delete table w/ valid name', assert => {
+			deleteTableRequest('someValidName', (err, res) => {
+				assert.error(res.body.error, 'No error');
+				assert.ok(res.body.result, 'Delete table OK.');
+				assert.end();
+			});
 		});
 	});
 
 	test('Delete non-existing table w/ valid name', assert => {
-		deleteTableRequest('someValidName', (err, res) => {
+		deleteTableRequest('nonExistingTableValidName', (err, res) => {
 			assert.error(res.body.error, 'No error');
 			assert.equal(res.body.result, false, 'Delete table OK.');
 			assert.end();
@@ -160,7 +165,67 @@ const TEST_DeleteTable = () => {
 }
 
 const TEST_CreateEntity = () => {
-	// ...
+	
+	const tbl = 'hncgb';
+	createTableRequest(tbl, () => {
+		test('Create basic entity w/ valid table name', assert => {
+			createEntityRequest(tbl, 'pkey', 'rkey', undefined, (err, res) => {
+				assert.error(res.body.error, 'No error');
+				assert.ok(res.body.result, 'Create entity OK.');
+				assert.end();
+			});
+		});
+
+		test('Create invalid entity w/ valid table name', assert => {
+			createEntityRequest(tbl, '', null, undefined, (err, res) => {
+				assert.equal(res.status, 400, 'Returned 400 OK.')
+				assert.notEqual(res.body.error, undefined, 'Create entity FAIL.');
+				assert.end();
+			});
+		});
+
+		test('Create invalid entity 2 w/ valid table name', assert => {
+			createEntityRequest(tbl, null, null, undefined, (err, res) => {
+				assert.equal(res.status, 400, 'Returned 400 OK.')
+				assert.notEqual(res.body.error, undefined, 'Create entity FAIL.');
+				assert.end();
+			});
+		});
+
+		test('Create empty entity w/ valid table name', assert => {
+			createEntityRequest(tbl, '', '', undefined, (err, res) => {
+				assert.error(res.body.error, 'No error');
+				assert.ok(res.body.result, 'Create entity OK.');
+				assert.end();
+
+				deleteTableRequest(tbl); // CLEANUP
+			});
+		});
+
+		test('Create basic entity w/ empty table name', assert => {
+			createEntityRequest('', 'pkey', 'rkey', undefined, (err, res) => {
+				assert.equal(res.status, 400, 'Returned 400 OK.')
+				assert.notEqual(res.body.error, undefined, 'Create entity FAIL.');
+				assert.end();
+			});
+		});
+
+		test('Create basic entity w/ table name < 3 chars', assert => {
+			createEntityRequest('aa', 'pkey', 'rkey', undefined, (err, res) => {
+				assert.equal(res.status, 400, 'Returned 400 OK.')
+				assert.notEqual(res.body.error, undefined, 'Create entity FAIL.');
+				assert.end();
+			});
+		});
+
+		test('Create basic entity w/ table name > 63 chars', assert => {
+			createEntityRequest(randomString(64), 'pkey', 'rkey', undefined, (err, res) => {
+				assert.equal(res.status, 400, 'Returned 400 OK.')
+				assert.notEqual(res.body.error, undefined, 'Create entity FAIL.');
+				assert.end();
+			});
+		});
+	});
 }
 
 const TEST_DeleteEntity = () => {
@@ -183,6 +248,8 @@ const TEST_FetchEntities = () => {
 TEST_CreateTable();
 
 TEST_DeleteTable();
+
+TEST_CreateEntity();
 
 
 // @end ----------------

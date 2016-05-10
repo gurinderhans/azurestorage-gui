@@ -73,6 +73,36 @@ router.route('/deleteTable').put((req, res) => {
 	}
 });
 
+router.route('/insertOrReplaceEntity').put((req, res) => {
+
+	try {
+		const azureEntity = toAzure(req.body);
+
+		tableService.insertOrReplaceEntity(req.query.tableName, azureEntity, (error, result, response) => {
+			if (error) {
+				res.status(400).json({error: error});
+			} else {
+				res.json({result: result});
+			}
+		});
+	} catch (error) {
+		res.status(400).json({error: {name: error.name, message: error.message}});
+	}
+});
+
+router.route('/deleteEntity').put((req, res) => {
+
+	const azureEntity = toAzure(req.body);
+
+	tableService.deleteEntity(req.query.tableName, azureEntity, (error, result, response) => {
+		if (error) {
+			res.status(400).json({error: error});
+		} else {
+			res.json({result: result});
+		}
+	});
+});
+
 
 // FIXME: fix url routes and etc
 // fetch list of all tables
@@ -96,36 +126,6 @@ router.get('/table/:tableName', (req, res) => {
 			res.json({result: result});
 		}
 	});
-});
-
-router.route('/:tableName/deleteEntity').put((req, res) => {
-
-	const azureEntity = toAzure(req.body);
-
-	tableService.deleteEntity(req.params.tableName, azureEntity, (error, result, response) => {
-		if (error) {
-			res.status(400).json({error: error});
-		} else {
-			res.json({result: result});
-		}
-	});
-});
-
-router.route('/:tableName/insertOrReplaceEntity').put((req, res) => {
-
-	try {
-		const azureEntity = toAzure(req.body);
-
-		tableService.insertOrReplaceEntity(req.params.tableName, azureEntity, (error, result, response) => {
-			if (error) {
-				res.status(400).json({error: error});
-			} else {
-				res.json({result: result});
-			}
-		});
-	} catch (error) {
-		res.status(400).json({error: {name: error.name, message: error.message}});
-	}
 });
 
 
