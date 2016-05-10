@@ -26,6 +26,7 @@ export default class TablesList extends React.Component {
 	}
 
 	onTableAddHandler() {
+		// FIXME: fix for new method of sending parms
 		fetch(`/api/createTable/${this.state.newTableName}`, {
 			method: 'PUT'
 		})
