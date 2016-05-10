@@ -176,6 +176,22 @@ const TEST_CreateEntity = () => {
 			});
 		});
 
+		test('Create custom entity w/ valid table name', assert => {
+			createEntityRequest(tbl, 'pkey', 'rkey', [
+				{key: 'strKey', val: 'strVal', 'type': 'string'},
+				{key: 'numKey', val: '23', 'type': 'number'},
+				{key: 'numKey1', val: 42, 'type': 'number'},
+				{key: 'dateKey', val: '2016-05-10T18:36:31.662', 'type': 'datetime'},
+				{key: 'boolKey', val: 'false', 'type': 'boolean'},
+				{key: 'boolKey1', val: true, 'type': 'boolean'},
+				{key: 'uTypeKey', val: '31', 'type': 'unknownType'}
+			], (err, res) => {
+				assert.error(res.body.error, 'No error');
+				assert.ok(res.body.result, 'Create entity OK.');
+				assert.end();
+			});
+		});
+
 		test('Create invalid entity w/ valid table name', assert => {
 			createEntityRequest(tbl, '', null, undefined, (err, res) => {
 				assert.equal(res.status, 400, 'Returned 400 OK.')
