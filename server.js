@@ -69,6 +69,7 @@ router.get('/table/:tableName', (req, res) => {
 
 router.route('/createTable/:tableName').put((req, res) => {
 	try {
+		console.log('tableName:',req.params);
 		tableService.createTableIfNotExists(req.params.tableName, function(error, result, response) {
 			if (error) {
 				res.status(400).json({error: error});
@@ -82,13 +83,18 @@ router.route('/createTable/:tableName').put((req, res) => {
 });
 
 router.route('/deleteTable/:tableName').put((req, res) => {
-	tableService.deleteTableIfExists(req.params.tableName, function(error, result, response) {
-		if (error) {
-			res.status(400).json({error: error});
-		} else {
-			res.json({result: result});
-		}
-	});
+
+	try {
+		tableService.deleteTableIfExists(req.params.tableName, function(error, result, response) {
+			if (error) {
+				res.status(400).json({error: error});
+			} else {
+				res.json({result: result});
+			}
+		});
+	} catch (error) {
+		res.status(400).json({error: {name: error.name, message: error.message}});
+	}
 });
 
 router.route('/:tableName/deleteEntity').put((req, res) => {
