@@ -91,16 +91,19 @@ router.route('/insertOrReplaceEntity').put((req, res) => {
 });
 
 router.route('/deleteEntity').put((req, res) => {
+	try {
+		const azureEntity = toAzure(req.body);
 
-	const azureEntity = toAzure(req.body);
-
-	tableService.deleteEntity(req.query.tableName, azureEntity, (error, result, response) => {
-		if (error) {
-			res.status(400).json({error: error});
-		} else {
-			res.json({result: result});
-		}
-	});
+		tableService.deleteEntity(req.query.tableName, azureEntity, (error, result, response) => {
+			if (error) {
+				res.status(400).json({error: error});
+			} else {
+				res.json({result: result});
+			}
+		});
+	} catch (error) {
+		res.status(400).json({error: {name: error.name, message: error.message}});
+	}
 });
 
 

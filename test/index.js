@@ -25,27 +25,25 @@ function deleteTableRequest(tableName, cb=() => {}) {
 	.end(cb);
 }
 
-function createEntityRequest(tableName, partitionKey, rowKey, addonItems=[], cb=() => {}) {
-	const entity = [{key: 'PartitionKey', val: partitionKey, 'type': 'string'}, {key: 'RowKey', val: rowKey, 'type': 'string'}].concat(addonItems);
-
+function createEntityRequest(tableName, entityDescriptor, cb=() => {}) {
 	request(app)
 	.put(`/api/insertOrReplaceEntity`)
 	.query({ tableName: tableName })
 	.set('Accept', 'application/json')
 	.set('Content-Type', 'application/json')
-	.send(entity)
+	.send(entityDescriptor)
 	.expect('Content-Type', /json/)
 	.expect(200)
 	.end(cb);
 }
 
-function deleteEntityRequest(tableName, partitionKey, rowKey, cb=() => {}) {
+function deleteEntityRequest(tableName, entityDescriptor, cb=() => {}) {
 	request(app)
 	.put(`/api/deleteEntity`)
 	.query({ tableName: tableName })
 	.set('Accept', 'application/json')
 	.set('Content-Type', 'application/json')
-	.send([{key: 'PartitionKey', val: partitionKey, 'type': 'string'}, {key: 'RowKey', val: rowKey, 'type': 'string'}])
+	.send(entityDescriptor)
 	.expect('Content-Type', /json/)
 	.expect(200)
 	.end(cb);
@@ -166,10 +164,12 @@ const TEST_DeleteTable = () => {
 
 const TEST_CreateEntity = () => {
 	
-	const tbl = 'hncgb';
+	const entityDescriptor = [{key: 'PartitionKey', val: 'pkey', 'type': 'string'}, {key: 'RowKey', val: 'rkey', 'type': 'string'}];
+	
+	const tbl = 'createEntityTestTable';
 	createTableRequest(tbl, () => {
 		test('Create basic entity w/ valid table name', assert => {
-			createEntityRequest(tbl, 'pkey', 'rkey', undefined, (err, res) => {
+			createEntityRequest(tbl, entityDescriptor, (err, res) => {
 				assert.error(res.body.error, 'No error');
 				assert.ok(res.body.result, 'Create entity OK.');
 				assert.end();
@@ -177,7 +177,7 @@ const TEST_CreateEntity = () => {
 		});
 
 		test('Create custom entity w/ valid table name', assert => {
-			createEntityRequest(tbl, 'pkey', 'rkey', [
+			createEntityRequest(tbl, entityDescriptor.concat([
 				{key: 'strKey', val: 'strVal', 'type': 'string'},
 				{key: 'numKey', val: '23', 'type': 'number'},
 				{key: 'numKey1', val: 42, 'type': 'number'},
@@ -185,7 +185,7 @@ const TEST_CreateEntity = () => {
 				{key: 'boolKey', val: 'false', 'type': 'boolean'},
 				{key: 'boolKey1', val: true, 'type': 'boolean'},
 				{key: 'uTypeKey', val: '31', 'type': 'unknownType'}
-			], (err, res) => {
+			]), (err, res) => {
 				assert.error(res.body.error, 'No error');
 				assert.ok(res.body.result, 'Create entity OK.');
 				assert.end();
@@ -193,10 +193,10 @@ const TEST_CreateEntity = () => {
 		});
 
 		test('Create custom entity w/ valid table name and invalid entity values', assert => {
-			createEntityRequest(tbl, 'pkey', 'rkey', [
+			createEntityRequest(tbl, entityDescriptor.concat([
 				{key: 'dateKey', val: 'not-a-date', 'type': 'datetime'},
 				{key: 'numKey', val: 'not-a-date', 'type': 'number'},
-			], (err, res) => {
+			]), (err, res) => {
 				assert.equal(res.status, 400, 'Returned 400 OK.')
 				assert.notEqual(res.body.error, undefined, 'Create entity FAIL.');
 				assert.end();
@@ -204,7 +204,10 @@ const TEST_CreateEntity = () => {
 		});
 
 		test('Create invalid entity w/ valid table name', assert => {
-			createEntityRequest(tbl, '', null, undefined, (err, res) => {
+			createEntityRequest(tbl, [
+				{key: 'PartitionKey', val: '', 'type': 'string'},
+				{key: 'Row', val: null, 'type': 'string'}
+			], (err, res) => {
 				assert.equal(res.status, 400, 'Returned 400 OK.')
 				assert.notEqual(res.body.error, undefined, 'Create entity FAIL.');
 				assert.end();
@@ -212,7 +215,7 @@ const TEST_CreateEntity = () => {
 		});
 
 		test('Create invalid entity 2 w/ valid table name', assert => {
-			createEntityRequest(tbl, null, null, undefined, (err, res) => {
+			createEntityRequest(tbl, [], (err, res) => {
 				assert.equal(res.status, 400, 'Returned 400 OK.')
 				assert.notEqual(res.body.error, undefined, 'Create entity FAIL.');
 				assert.end();
@@ -220,7 +223,10 @@ const TEST_CreateEntity = () => {
 		});
 
 		test('Create empty entity w/ valid table name', assert => {
-			createEntityRequest(tbl, '', '', undefined, (err, res) => {
+			createEntityRequest(tbl, [
+				{key: 'PartitionKey', val: '', 'type': 'string'},
+				{key: 'RowKey', val: '', 'type': 'string'}
+			], (err, res) => {
 				assert.error(res.body.error, 'No error');
 				assert.ok(res.body.result, 'Create entity OK.');
 				assert.end();
@@ -230,7 +236,7 @@ const TEST_CreateEntity = () => {
 		});
 
 		test('Create basic entity w/ empty table name', assert => {
-			createEntityRequest('', 'pkey', 'rkey', undefined, (err, res) => {
+			createEntityRequest('', entityDescriptor, (err, res) => {
 				assert.equal(res.status, 400, 'Returned 400 OK.')
 				assert.notEqual(res.body.error, undefined, 'Create entity FAIL.');
 				assert.end();
@@ -238,7 +244,7 @@ const TEST_CreateEntity = () => {
 		});
 
 		test('Create basic entity w/ table name < 3 chars', assert => {
-			createEntityRequest('aa', 'pkey', 'rkey', undefined, (err, res) => {
+			createEntityRequest('aa', entityDescriptor, (err, res) => {
 				assert.equal(res.status, 400, 'Returned 400 OK.')
 				assert.notEqual(res.body.error, undefined, 'Create entity FAIL.');
 				assert.end();
@@ -246,7 +252,7 @@ const TEST_CreateEntity = () => {
 		});
 
 		test('Create basic entity w/ table name > 63 chars', assert => {
-			createEntityRequest(randomString(64), 'pkey', 'rkey', undefined, (err, res) => {
+			createEntityRequest(randomString(64), entityDescriptor, (err, res) => {
 				assert.equal(res.status, 400, 'Returned 400 OK.')
 				assert.notEqual(res.body.error, undefined, 'Create entity FAIL.');
 				assert.end();
@@ -256,7 +262,72 @@ const TEST_CreateEntity = () => {
 }
 
 const TEST_DeleteEntity = () => {
-	// ...
+
+	const entityDescriptor = [{key: 'PartitionKey', val: 'pkey', 'type': 'string'}, {key: 'RowKey', val: 'rkey', 'type': 'string'}];
+
+	const tbl = 'deleteEntityTestTable';
+	createTableRequest(tbl, () => {
+		createEntityRequest(tbl, entityDescriptor, (err, res) => {
+			
+			test('Delete basic entity', assert => {
+				deleteEntityRequest(tbl, entityDescriptor, (err, res) => {
+					assert.error(res.body.error, 'No error');
+					assert.ok(res.body.result, 'Delete entity OK.');
+					assert.end();
+				});
+			});
+
+			test('Delete non-existing entity', assert => {
+				deleteEntityRequest(tbl, [{key: 'PartitionKey', val: 'nonexisting', 'type': 'string'}, {key: 'RowKey', val: 'nonexisting', 'type': 'string'}], (err, res) => {
+					assert.equal(res.status, 400, 'Returned 400 OK.')
+					assert.notEqual(res.body.error, undefined, 'Delete entity FAIL.');
+					assert.end();
+				});
+			});
+
+			test('Delete empty entity', assert => {
+				deleteEntityRequest(tbl, [{key: 'PartitionKey', val: '', 'type': 'string'}, {key: 'RowKey', val: '', 'type': 'string'}], (err, res) => {
+					assert.equal(res.status, 400, 'Returned 400 OK.')
+					assert.notEqual(res.body.error, undefined, 'Delete entity FAIL.');
+					assert.end();
+				});
+			});
+
+			test('Delete null entity', assert => {
+				deleteEntityRequest(tbl, [], (err, res) => {
+					assert.equal(res.status, 400, 'Returned 400 OK.')
+					assert.notEqual(res.body.error, undefined, 'Delete entity FAIL.');
+					assert.end();
+				});
+			});
+
+			test('Delete basic entity w/ empty tableName', assert => {
+				deleteEntityRequest('', entityDescriptor, (err, res) => {
+					assert.equal(res.status, 400, 'Returned 400 OK.')
+					assert.notEqual(res.body.error, undefined, 'Delete entity FAIL.');
+					assert.end();
+				});
+			});
+
+			test('Delete basic entity w/ null tableName', assert => {
+				deleteEntityRequest(null, entityDescriptor, (err, res) => {
+					assert.equal(res.status, 400, 'Returned 400 OK.')
+					assert.notEqual(res.body.error, undefined, 'Delete entity FAIL.');
+					assert.end();
+				});
+			});
+
+			test('Delete entity null request', assert => {
+				deleteEntityRequest(null, [], (err, res) => {
+					assert.equal(res.status, 400, 'Returned 400 OK.')
+					assert.notEqual(res.body.error, undefined, 'Delete entity FAIL.');
+					assert.end();
+
+					deleteTableRequest(tbl); // CLEANUP
+				});
+			});
+		});
+	});
 }
 
 const TEST_FetchTables = () => {
@@ -277,6 +348,8 @@ TEST_CreateTable();
 TEST_DeleteTable();
 
 TEST_CreateEntity();
+
+TEST_DeleteEntity();
 
 
 // @end ----------------
