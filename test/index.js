@@ -57,11 +57,10 @@ function fetchTablesRequest(cb=() => {}) {
 	.end(cb);
 }
 
-
-// FIXME: fix url route parmams for fns below
 function fetchTableEntitiesRequest(tableName, cb=() => {}) {
 	request(app)
-	.get(`/api/table/${tableName}`)
+	.get('/api/fetchEntities/')
+	.query({tableName: tableName})
 	.expect('Content-Type', /json/)
 	.expect(200)
 	.end(cb);
@@ -72,25 +71,25 @@ function fetchTableEntitiesRequest(tableName, cb=() => {}) {
 
 const TEST_CreateTable = () => {
 
+	test('Create pre-existing table w/ valid name', assert => {
+		createTableRequest('newTable', () => {
+			createTableRequest('newTable', (err, res) => {
+				assert.error(res.body.error, 'No error');
+				assert.ok(res.body.result, 'Create table OK.');
+				assert.end();
+
+				deleteTableRequest('newTable');
+			});
+		});
+	});
+
 	test('Create table w/ valid name', assert => {
 		createTableRequest('validTableName', (err, res) => {
 			assert.error(res.body.error, 'No error');
 			assert.ok(res.body.result, 'Create table OK.');
 			assert.end();
 
-			deleteTableRequest('validTableName'); // CLEANUP
-		});
-	});
-
-	createTableRequest('newTable', () => {
-		test('Create pre-existing table w/ valid name', assert => {
-			createTableRequest('newTable', (err, res) => {
-				assert.error(res.body.error, 'No error');
-				assert.ok(res.body.result, 'Create table OK.');
-				assert.end();
-
-				deleteTableRequest('newTable'); // CLEANUP
-			});
+			deleteTableRequest('validTableName');
 		});
 	});
 
@@ -121,8 +120,8 @@ const TEST_CreateTable = () => {
 
 const TEST_DeleteTable = () => {
 
-	createTableRequest('someValidName', () => {
-		test('Delete table w/ valid name', assert => {
+	test('Delete table w/ valid name', assert => {
+		createTableRequest('someValidName', () => {
 			deleteTableRequest('someValidName', (err, res) => {
 				assert.error(res.body.error, 'No error');
 				assert.ok(res.body.result, 'Delete table OK.');
@@ -166,19 +165,45 @@ const TEST_DeleteTable = () => {
 
 const TEST_CreateEntity = () => {
 	
-	const entityDescriptor = [{key: 'PartitionKey', val: 'pkey', 'type': 'string'}, {key: 'RowKey', val: 'rkey', 'type': 'string'}];
-	
 	const tbl = 'createEntityTestTable';
-	createTableRequest(tbl, () => {
-		test('Create basic entity w/ valid table name', assert => {
+	const entityDescriptor = [{key: 'PartitionKey', val: 'pkey', 'type': 'string'}, {key: 'RowKey', val: 'rkey', 'type': 'string'}];
+
+	test('Create basic entity w/ empty table name', assert => {
+		createEntityRequest('', entityDescriptor, (err, res) => {
+			assert.equal(res.status, 400, 'Returned 400 OK.')
+			assert.notEqual(res.body.error, undefined, 'Create entity FAIL.');
+			assert.end();
+		});
+	});
+
+	test('Create basic entity w/ table name < 3 chars', assert => {
+		createEntityRequest('aa', entityDescriptor, (err, res) => {
+			assert.equal(res.status, 400, 'Returned 400 OK.')
+			assert.notEqual(res.body.error, undefined, 'Create entity FAIL.');
+			assert.end();
+		});
+	});
+
+	test('Create basic entity w/ table name > 63 chars', assert => {
+		createEntityRequest(randomString(64), entityDescriptor, (err, res) => {
+			assert.equal(res.status, 400, 'Returned 400 OK.')
+			assert.notEqual(res.body.error, undefined, 'Create entity FAIL.');
+			assert.end();
+		});
+	});
+
+	test('Create basic entity w/ valid table name', assert => {
+		createTableRequest(tbl, () => {
 			createEntityRequest(tbl, entityDescriptor, (err, res) => {
 				assert.error(res.body.error, 'No error');
 				assert.ok(res.body.result, 'Create entity OK.');
 				assert.end();
 			});
 		});
+	});
 
-		test('Create custom entity w/ valid table name', assert => {
+	test('Create custom entity w/ valid table name', assert => {
+		createTableRequest(tbl, () => {
 			createEntityRequest(tbl, entityDescriptor.concat([
 				{key: 'strKey', val: 'strVal', 'type': 'string'},
 				{key: 'numKey', val: '23', 'type': 'number'},
@@ -193,8 +218,10 @@ const TEST_CreateEntity = () => {
 				assert.end();
 			});
 		});
+	});
 
-		test('Create custom entity w/ valid table name and invalid entity values', assert => {
+	test('Create custom entity w/ valid table name and invalid entity values', assert => {
+		createTableRequest(tbl, () => {
 			createEntityRequest(tbl, entityDescriptor.concat([
 				{key: 'dateKey', val: 'not-a-date', 'type': 'datetime'},
 				{key: 'numKey', val: 'not-a-date', 'type': 'number'},
@@ -204,8 +231,10 @@ const TEST_CreateEntity = () => {
 				assert.end();
 			});
 		});
+	});
 
-		test('Create invalid entity w/ valid table name', assert => {
+	test('Create invalid entity w/ valid table name', assert => {
+		createTableRequest(tbl, () => {
 			createEntityRequest(tbl, [
 				{key: 'PartitionKey', val: '', 'type': 'string'},
 				{key: 'Row', val: null, 'type': 'string'}
@@ -215,16 +244,20 @@ const TEST_CreateEntity = () => {
 				assert.end();
 			});
 		});
+	});
 
-		test('Create invalid entity 2 w/ valid table name', assert => {
+	test('Create invalid entity 2 w/ valid table name', assert => {
+		createTableRequest(tbl, () => {
 			createEntityRequest(tbl, [], (err, res) => {
 				assert.equal(res.status, 400, 'Returned 400 OK.')
 				assert.notEqual(res.body.error, undefined, 'Create entity FAIL.');
 				assert.end();
 			});
 		});
+	});
 
-		test('Create empty entity w/ valid table name', assert => {
+	test('Create empty entity w/ valid table name', assert => {
+		createTableRequest(tbl, () => {
 			createEntityRequest(tbl, [
 				{key: 'PartitionKey', val: '', 'type': 'string'},
 				{key: 'RowKey', val: '', 'type': 'string'}
@@ -233,31 +266,8 @@ const TEST_CreateEntity = () => {
 				assert.ok(res.body.result, 'Create entity OK.');
 				assert.end();
 
-				deleteTableRequest(tbl); // CLEANUP
-			});
-		});
-
-		test('Create basic entity w/ empty table name', assert => {
-			createEntityRequest('', entityDescriptor, (err, res) => {
-				assert.equal(res.status, 400, 'Returned 400 OK.')
-				assert.notEqual(res.body.error, undefined, 'Create entity FAIL.');
-				assert.end();
-			});
-		});
-
-		test('Create basic entity w/ table name < 3 chars', assert => {
-			createEntityRequest('aa', entityDescriptor, (err, res) => {
-				assert.equal(res.status, 400, 'Returned 400 OK.')
-				assert.notEqual(res.body.error, undefined, 'Create entity FAIL.');
-				assert.end();
-			});
-		});
-
-		test('Create basic entity w/ table name > 63 chars', assert => {
-			createEntityRequest(randomString(64), entityDescriptor, (err, res) => {
-				assert.equal(res.status, 400, 'Returned 400 OK.')
-				assert.notEqual(res.body.error, undefined, 'Create entity FAIL.');
-				assert.end();
+				/// CLEANUP
+				deleteTableRequest(tbl);
 			});
 		});
 	});
@@ -265,69 +275,75 @@ const TEST_CreateEntity = () => {
 
 const TEST_DeleteEntity = () => {
 
+	const tbl = 'deleteEntityTestTable';
 	const entityDescriptor = [{key: 'PartitionKey', val: 'pkey', 'type': 'string'}, {key: 'RowKey', val: 'rkey', 'type': 'string'}];
 
-	const tbl = 'deleteEntityTestTable';
-	createTableRequest(tbl, () => {
-		createEntityRequest(tbl, entityDescriptor, (err, res) => {
-			
-			test('Delete basic entity', assert => {
+	test('Delete basic entity', assert => {
+		createTableRequest(tbl, () => {
+			createEntityRequest(tbl, entityDescriptor, (err, res) => {
 				deleteEntityRequest(tbl, entityDescriptor, (err, res) => {
 					assert.error(res.body.error, 'No error');
 					assert.ok(res.body.result, 'Delete entity OK.');
 					assert.end();
 				});
 			});
+		});
+	});
 
-			test('Delete non-existing entity', assert => {
-				deleteEntityRequest(tbl, [{key: 'PartitionKey', val: 'nonexisting', 'type': 'string'}, {key: 'RowKey', val: 'nonexisting', 'type': 'string'}], (err, res) => {
-					assert.equal(res.status, 400, 'Returned 400 OK.')
-					assert.notEqual(res.body.error, undefined, 'Delete entity FAIL.');
-					assert.end();
-				});
+	test('Delete non-existing entity', assert => {
+		createTableRequest(tbl, () => {
+			deleteEntityRequest(tbl, [{key: 'PartitionKey', val: 'nonexisting', 'type': 'string'}, {key: 'RowKey', val: 'nonexisting', 'type': 'string'}], (err, res) => {
+				assert.equal(res.status, 400, 'Returned 400 OK.')
+				assert.notEqual(res.body.error, undefined, 'Delete entity FAIL.');
+				assert.end();
 			});
+		});
+	});
 
-			test('Delete empty entity', assert => {
-				deleteEntityRequest(tbl, [{key: 'PartitionKey', val: '', 'type': 'string'}, {key: 'RowKey', val: '', 'type': 'string'}], (err, res) => {
-					assert.equal(res.status, 400, 'Returned 400 OK.')
-					assert.notEqual(res.body.error, undefined, 'Delete entity FAIL.');
-					assert.end();
-				});
+	test('Delete empty entity', assert => {
+		createTableRequest(tbl, () => {
+			deleteEntityRequest(tbl, [{key: 'PartitionKey', val: '', 'type': 'string'}, {key: 'RowKey', val: '', 'type': 'string'}], (err, res) => {
+				assert.equal(res.status, 400, 'Returned 400 OK.')
+				assert.notEqual(res.body.error, undefined, 'Delete entity FAIL.');
+				assert.end();
 			});
+		});
+	});
 
-			test('Delete null entity', assert => {
-				deleteEntityRequest(tbl, [], (err, res) => {
-					assert.equal(res.status, 400, 'Returned 400 OK.')
-					assert.notEqual(res.body.error, undefined, 'Delete entity FAIL.');
-					assert.end();
-				});
+	test('Delete null entity', assert => {
+		createTableRequest(tbl, () => {
+			deleteEntityRequest(tbl, [], (err, res) => {
+				assert.equal(res.status, 400, 'Returned 400 OK.')
+				assert.notEqual(res.body.error, undefined, 'Delete entity FAIL.');
+				assert.end();
 			});
+		});
+	});
 
-			test('Delete basic entity w/ empty tableName', assert => {
-				deleteEntityRequest('', entityDescriptor, (err, res) => {
-					assert.equal(res.status, 400, 'Returned 400 OK.')
-					assert.notEqual(res.body.error, undefined, 'Delete entity FAIL.');
-					assert.end();
-				});
-			});
+	test('Delete basic entity w/ empty tableName', assert => {
+		deleteEntityRequest('', entityDescriptor, (err, res) => {
+			assert.equal(res.status, 400, 'Returned 400 OK.')
+			assert.notEqual(res.body.error, undefined, 'Delete entity FAIL.');
+			assert.end();
+		});
+	});
 
-			test('Delete basic entity w/ null tableName', assert => {
-				deleteEntityRequest(null, entityDescriptor, (err, res) => {
-					assert.equal(res.status, 400, 'Returned 400 OK.')
-					assert.notEqual(res.body.error, undefined, 'Delete entity FAIL.');
-					assert.end();
-				});
-			});
+	test('Delete basic entity w/ null tableName', assert => {
+		deleteEntityRequest(null, entityDescriptor, (err, res) => {
+			assert.equal(res.status, 400, 'Returned 400 OK.')
+			assert.notEqual(res.body.error, undefined, 'Delete entity FAIL.');
+			assert.end();
+		});
+	});
 
-			test('Delete entity null request', assert => {
-				deleteEntityRequest(null, [], (err, res) => {
-					assert.equal(res.status, 400, 'Returned 400 OK.')
-					assert.notEqual(res.body.error, undefined, 'Delete entity FAIL.');
-					assert.end();
+	test('Delete entity null request', assert => {
+		deleteEntityRequest(null, [], (err, res) => {
+			assert.equal(res.status, 400, 'Returned 400 OK.')
+			assert.notEqual(res.body.error, undefined, 'Delete entity FAIL.');
+			assert.end();
 
-					deleteTableRequest(tbl); // CLEANUP
-				});
-			});
+			/// CLEANUP
+			deleteTableRequest(tbl);
 		});
 	});
 }
@@ -344,7 +360,60 @@ const TEST_FetchTables = () => {
 }
 
 const TEST_FetchEntities = () => {
-	// ...
+
+	const tbl = 'fetchEntitiesTableName';
+	const entityDescriptor = [{key: 'PartitionKey', val: 'pkey', 'type': 'string'}, {key: 'RowKey', val: 'rkey', 'type': 'string'}];
+
+	test('Fetch entities from table w/ count 0', assert => {
+		createTableRequest(tbl, () => {
+			fetchTableEntitiesRequest(tbl, (err, res) => {
+				assert.error(res.body.error, 'No error');
+				assert.ok(res.body.result, 'Fetch entities OK.');
+				assert.equal(res.body.result.entries.length, 0, 'Entity count is 0');
+				assert.end();
+			});
+		});
+	});
+
+	test('Fetch entities from table w/ count 1', assert => {
+		createTableRequest(tbl, () => {
+			createEntityRequest(tbl, entityDescriptor, () => {
+				fetchTableEntitiesRequest(tbl, (err, res) => {
+					assert.error(res.body.error, 'No error');
+					assert.ok(res.body.result, 'Fetch entities OK.');
+					assert.equal(res.body.result.entries.length, 1, 'Entity count is 1');
+					assert.end();
+				});
+			});
+		});
+	});
+
+	test('Fetch entities w/o table', assert => {
+		fetchTableEntitiesRequest(null, (err, res) => {
+			assert.equal(res.status, 400, 'Returned 400 OK.')
+			assert.notEqual(res.body.error, undefined, 'Delete entity FAIL.');
+			assert.end();
+		});
+	});
+
+	test('Fetch entities on non-existing table', assert => {
+		fetchTableEntitiesRequest('thisTableShouldNotExist', (err, res) => {
+			assert.equal(res.status, 400, 'Returned 400 OK.')
+			assert.notEqual(res.body.error, undefined, 'Delete entity FAIL.');
+			assert.end();
+		});
+	});
+
+	test('Fetch entities on empty table name', assert => {
+		fetchTableEntitiesRequest('', (err, res) => {
+			assert.equal(res.status, 400, 'Returned 400 OK.')
+			assert.notEqual(res.body.error, undefined, 'Delete entity FAIL.');
+			assert.end();
+
+			/// CLEANUP
+			deleteTableRequest(tbl);
+		});
+	});
 }
 
 
@@ -361,5 +430,8 @@ TEST_CreateEntity();
 TEST_DeleteEntity();
 
 TEST_FetchTables();
+
+TEST_FetchEntities();
+
 
 // @end ----------------

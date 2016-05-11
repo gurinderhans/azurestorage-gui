@@ -117,18 +117,20 @@ router.get('/fetchTables', (req, res) => {
 	});
 });
 
-
-// FIXME: fix url routes and etc
 // fetch all entities for the given table
 // TODO: add pagination using the `continuationToken`?
-router.get('/table/:tableName', (req, res) => {
-	tableService.queryEntities(req.params.tableName, new azure.TableQuery(), null, (error, result, response) => {
-		if (error) {
-			res.status(400).json({error: error});
-		} else {
-			res.json({result: result});
-		}
-	});
+router.get('/fetchEntities', (req, res) => {
+	try {
+		tableService.queryEntities(req.query.tableName, new azure.TableQuery(), null, (error, result, response) => {
+			if (error) {
+				res.status(400).json({error: error});
+			} else {
+				res.json({result: result});
+			}
+		});
+	} catch (error) {
+		res.status(400).json({error: {name: error.name, message: error.message}});
+	}
 });
 
 
