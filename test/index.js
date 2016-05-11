@@ -192,6 +192,17 @@ const TEST_CreateEntity = () => {
 			});
 		});
 
+		test('Create custom entity w/ valid table name and invalid entity values', assert => {
+			createEntityRequest(tbl, 'pkey', 'rkey', [
+				{key: 'dateKey', val: 'not-a-date', 'type': 'datetime'},
+				{key: 'numKey', val: 'not-a-date', 'type': 'number'},
+			], (err, res) => {
+				assert.equal(res.status, 400, 'Returned 400 OK.')
+				assert.notEqual(res.body.error, undefined, 'Create entity FAIL.');
+				assert.end();
+			});
+		});
+
 		test('Create invalid entity w/ valid table name', assert => {
 			createEntityRequest(tbl, '', null, undefined, (err, res) => {
 				assert.equal(res.status, 400, 'Returned 400 OK.')
