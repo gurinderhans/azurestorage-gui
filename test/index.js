@@ -49,19 +49,19 @@ function deleteEntityRequest(tableName, entityDescriptor, cb=() => {}) {
 	.end(cb);
 }
 
-
-// FIXME: fix url route parmams for fns below
-function fetchTableEntitiesRequest(tableName, cb=() => {}) {
+function fetchTablesRequest(cb=() => {}) {
 	request(app)
-	.get(`/api/table/${tableName}`)
+	.get('/api/fetchTables')
 	.expect('Content-Type', /json/)
 	.expect(200)
 	.end(cb);
 }
 
-function fetchTables(cb=() => {}) {
+
+// FIXME: fix url route parmams for fns below
+function fetchTableEntitiesRequest(tableName, cb=() => {}) {
 	request(app)
-	.get('/api/tables/')
+	.get(`/api/table/${tableName}`)
 	.expect('Content-Type', /json/)
 	.expect(200)
 	.end(cb);
@@ -88,6 +88,8 @@ const TEST_CreateTable = () => {
 				assert.error(res.body.error, 'No error');
 				assert.ok(res.body.result, 'Create table OK.');
 				assert.end();
+
+				deleteTableRequest('newTable'); // CLEANUP
 			});
 		});
 	});
@@ -331,7 +333,14 @@ const TEST_DeleteEntity = () => {
 }
 
 const TEST_FetchTables = () => {
-	// ...
+
+	test('Fetch tables', assert => {
+		fetchTablesRequest((err, res) => {
+			assert.error(res.body.error, 'No error');
+			assert.ok(res.body.result, 'Fetch tables OK.');
+			assert.end();
+		});
+	});
 }
 
 const TEST_FetchEntities = () => {
@@ -351,5 +360,6 @@ TEST_CreateEntity();
 
 TEST_DeleteEntity();
 
+TEST_FetchTables();
 
 // @end ----------------
