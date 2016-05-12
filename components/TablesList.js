@@ -7,15 +7,16 @@ export default class TablesList extends React.Component {
 		this.state = {newTableName: '', tables: []};
 		
 		this.onTableAddHandler = this.onTableAddHandler.bind(this);
-		this.fieldTableNameChange = this.fieldTableNameChange.bind(this);
+		this.fieldTableNameChangeHandler = this.fieldTableNameChangeHandler.bind(this);
+		this.deleteTableHandler = this.deleteTableHandler.bind(this);
 	}
 
 	componentDidMount() {
-		fetch('/api/tables')
+		fetch('/api/fetchTables')
 		.then(response => response.json())
 		.then(json => {
 			if (json.error) {
-				// something went wrong...
+				console.warn(json.error);
 				return;
 			}
 
@@ -26,14 +27,13 @@ export default class TablesList extends React.Component {
 	}
 
 	onTableAddHandler() {
-		// FIXME: fix for new method of sending parms
-		fetch(`/api/createTable/${this.state.newTableName}`, {
+		fetch(`/api/createTable?tableName=${this.state.newTableName}`, {
 			method: 'PUT'
 		})
 		.then(response => response.json())
 		.then(json => {
 			if (json.error) {
-				//
+				console.warn(json.error);
 				return;
 			}
 
@@ -48,8 +48,29 @@ export default class TablesList extends React.Component {
 		});
 	}
 
-	fieldTableNameChange(event) {
+	fieldTableNameChangeHandler(event) {
 		this.setState({newTableName: event.target.value});
+	}
+
+	deleteTableHandler(deleteTableIndex) {
+		fetch(`/api/deleteTable?tableName=${this.state.tables[deleteTableIndex]}`, {
+			method: 'PUT'
+		})
+		.then(response => response.json())
+		.then(json => {
+			if (json.error) {
+				console.warn(json.error);
+				return;
+			}
+
+			this.state.tables.splice(deleteTableIndex, 1);
+			this.setState({
+				tables: this.state.tables
+			});
+		})
+		.catch(error => {
+			console.warn('deleteTable:ERR', error);
+		});
 	}
 
 	render() {
@@ -57,13 +78,17 @@ export default class TablesList extends React.Component {
 			<div>
 				<h3>Tables</h3>
 				<div>
-					<input type='text' placeholder='New Table Name' value={this.state.newTableName} onChange={this.fieldTableNameChange} />
+					<input type='text' placeholder='New Table Name' value={this.state.newTableName} onChange={this.fieldTableNameChangeHandler} />
 					<button onClick={this.onTableAddHandler}>+</button>
 				</div>
 				<ul>
 					{this.state.tables.map((table, i) => {
 						return (
-							<li onClick={this.props.tableClickHandle.bind(null, table)} key={i}>{table} <button>Del</button></li>
+							<li key={i}>
+								<span onClick={this.props.tableClickHandle.bind(null, table)}>{table}</span>
+								&nbsp;
+								<button onClick={this.deleteTableHandler.bind(null, i)}>-</button>
+							</li>
 						);
 					})}
 				</ul>

@@ -27,11 +27,11 @@ export default class EntitiesList extends React.Component {
 			return;
 		}
 
-		fetch(`/api/table/${props.tableName}`)
+		fetch(`/api/fetchEntities?tableName=${props.tableName}`)
 		.then(response => response.json())
 		.then(json => {
 			if (json.error) {
-				// something went wrong...
+				console.warn(json.error);
 				return;
 			}
 
@@ -82,7 +82,7 @@ export default class EntitiesList extends React.Component {
 	}
 
 	onEntitySaveHandler(entityId) {
-		fetch(`/api/${this.props.tableName}/insertOrReplaceEntity`, {
+		fetch(`/api/insertOrReplaceEntity?tableName=${this.props.tableName}`, {
 			method: 'PUT',
 			headers: {
 				'Accept': 'application/json',
@@ -93,7 +93,6 @@ export default class EntitiesList extends React.Component {
 		.then(response => response.json())
 		.then(json => {
 			if (json.error) {
-				// something went wrong
 				console.warn('error:',json.error);
 				return;
 			}
@@ -104,7 +103,7 @@ export default class EntitiesList extends React.Component {
 	}
 
 	onEntityDeleteHandler(entityId) {
-		fetch(`/api/${this.props.tableName}/deleteEntity`, {
+		fetch(`/api/deleteEntity?tableName=${this.props.tableName}`, {
 			method: 'PUT',
 			headers: {
 				'Accept': 'application/json',
@@ -115,7 +114,7 @@ export default class EntitiesList extends React.Component {
 		.then(response => response.json())
 		.then(json => {
 			if (json.error) {
-				//
+				console.warn(json.error);
 				return;
 			}
 
