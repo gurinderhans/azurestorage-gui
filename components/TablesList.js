@@ -67,6 +67,8 @@ export default class TablesList extends React.Component {
 			this.setState({
 				tables: this.state.tables
 			});
+
+			this.props.tableClickHandle(null);
 		})
 		.catch(error => {
 			console.warn('deleteTable:ERR', error);
