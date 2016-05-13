@@ -9,6 +9,6 @@ env:
 notifications:
   email: false
 script:
-  npm run travistest
+  npm run servertest
 after_success:
   npm run coverage

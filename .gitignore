@@ -25,6 +25,5 @@ compiled.js
 ### auth file ###
 config.env
 
-
-### Istanbul Coverage ###
-coverage/
+### nyc coverage ###
+.nyc_output/
