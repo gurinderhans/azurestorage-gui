@@ -1,6 +1,6 @@
 import { agent as request } from 'supertest'
-import app from '../../server'
 import { expect } from 'chai'
+import app from '../../server'
 
 /// MARK: - Helper functions
 
@@ -284,9 +284,7 @@ describe("TEST::CreateEntity", () => {
 				expect(res.body.result).to.exist;
 
 				/// CLEANUP
-				deleteTableRequest(tbl);
-
-				done();
+				deleteTableRequest(tbl, done);
 			});
 		});
 	});
@@ -367,9 +365,7 @@ describe("TEST::DeleteEntity", () => {
 			expect(res.body.error).to.not.equal(undefined);
 
 			/// CLEANUP
-			deleteTableRequest(tbl);
-
-			done();
+			deleteTableRequest(tbl, done);
 		});
 	});
 });
@@ -397,7 +393,7 @@ describe("TEST::FetchEntities", () => {
 				expect(res.body.error).to.equal(undefined);
 				expect(res.body.result).to.exist;
 				expect(res.body.result.entries.length).to.equal(0);
-
+				
 				done();
 			});
 		});
@@ -410,8 +406,9 @@ describe("TEST::FetchEntities", () => {
 					expect(res.body.error).to.equal(undefined);
 					expect(res.body.result).to.exist;
 					expect(res.body.result.entries.length).to.equal(1);
-
-					done();
+					
+					/// CLEANUP
+					deleteTableRequest(tbl, done);
 				});
 			});
 		});
@@ -439,9 +436,6 @@ describe("TEST::FetchEntities", () => {
 		fetchTableEntitiesRequest('', (err, res) => {
 			expect(res.status).to.equal(400);
 			expect(res.body.error).to.not.equal(undefined);
-
-			/// CLEANUP
-			deleteTableRequest(tbl);
 
 			done();
 		});
