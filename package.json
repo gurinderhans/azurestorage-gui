@@ -10,6 +10,8 @@
     ]
   },
   "scripts": {
+    "servertest": "mocha --require babel-core/register test/server-tests/*-test.js",
+    "uitest": "mocha --require babel-core/register test/components/*-test.js",
     "test": "nyc mocha --require babel-core/register test/**/*-test.js",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "watch": "watchify -v -d -t lessify -t [ babelify --presets [ es2015 react ] ] client.js -o public/compiled.js",
@@ -28,7 +30,8 @@
     "env2": "^2.0.7",
     "express": "^4.13.4",
     "react": "^15.0.2",
-    "react-dom": "^15.0.2"
+    "react-dom": "^15.0.2",
+    "whatwg-fetch": "^1.0.0"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.6.0",
