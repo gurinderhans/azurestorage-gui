@@ -1,10 +1,9 @@
 var React = require('react');
 var expect = require('chai').expect;
 var enzyme = require('enzyme');
-var Burrito = require('../Burrito');
+var Burrito = require('../../Burrito');
 
 describe("<Burrito />", function() {
-  'use strict';
 
   describe('Text: ', function () {
     it("renders no text with no props", function() {

@@ -8,7 +8,5 @@ env:
   - secure: Mh+CBdbdbIQ+CYgHFy5f56jb/s4U99dZYingX8KOHKm1d+RfCb6D/AuyNzZksAZGIMpMslPeh27oHPZOhKlwSA/dghFQUkducU19WuparYRIKqoAyPGXvI+/ppIKeWwyNopXJI6dqpuLZyKcLamFO6zYFep9gbfcj3xexgHQBNea1JigtOhAvQx0EgdGXSaD/L219u3yJdWdCJsNU0LcMxB49mxXKCcGlKTqp64XBFU1Xpy4Qmw5oM9E5+RaPCjC55COgSAU5ErE7n+tveoF2PwajZNIHHd0Jmrq+8FECE/Y7MTnK+09JbSvc7OPfq9It9QTjXdkBVAzP25RrMLMpJmK+UjBf/Qc4sA/IZdD6QsqLbknSlPHYA6ufCo9X2qXWLvAw/fe0yooMhWkJylT/Mztkzx1ClMYYHxW4JuAsqQ2tKFztx1QT35KLrfH+NOcgCTrBzBWIc+M1deTbxj5B+c7Fh7BtfksK+x53dEg4LnZ9T5haRv0ffXEVQtbMnsvjaRp1kpmyKf/pdm0JoOcYRsY8YMr9rz63aaFD0S9970w7OTqqUAXl9mSlkAPn8UDTvZaT68ZxkhDHyyDplWOOVDfiinc0jDIMx/Fmvzt9mDy2/EqxZylac+ru0NY+jBB/jqtZAjORlqrc5EqTEG+Ll96dbcm/TDwzVO6+rzlfTg=
 notifications:
   email: false
-script:
-  npm run servertest
 after_success:
   npm run coverage

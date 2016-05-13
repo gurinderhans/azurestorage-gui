@@ -1,0 +1,386 @@
+const request = require('supertest');
+const app = require('../../server');
+
+
+/// MARK: - Helper functions
+
+const randomString = (n) => {let r="",t="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";for(let o=0;n>o;o++)r+=t.charAt(Math.floor(Math.random()*t.length));return r};
+
+function createTableRequest(tableName, cb=() => {}) {
+	request(app)
+	.put('/api/createTable')
+	.query({ tableName: tableName })
+	.expect('Content-Type', /json/)
+	.expect(200)
+	.end(cb);
+}
+
+function deleteTableRequest(tableName, cb=() => {}) {
+	request(app)
+	.put('/api/deleteTable')
+	.query({ tableName: tableName })
+	.expect('Content-Type', /json/)
+	.expect(200)
+	.end(cb);
+}
+
+function createEntityRequest(tableName, entityDescriptor, cb=() => {}) {
+	request(app)
+	.put(`/api/insertOrReplaceEntity`)
+	.query({ tableName: tableName })
+	.set('Accept', 'application/json')
+	.set('Content-Type', 'application/json')
+	.send(entityDescriptor)
+	.expect('Content-Type', /json/)
+	.expect(200)
+	.end(cb);
+}
+
+function deleteEntityRequest(tableName, entityDescriptor, cb=() => {}) {
+	request(app)
+	.put(`/api/deleteEntity`)
+	.query({ tableName: tableName })
+	.set('Accept', 'application/json')
+	.set('Content-Type', 'application/json')
+	.send(entityDescriptor)
+	.expect('Content-Type', /json/)
+	.expect(200)
+	.end(cb);
+}
+
+function fetchTablesRequest(cb=() => {}) {
+	request(app)
+	.get('/api/fetchTables')
+	.expect('Content-Type', /json/)
+	.expect(200)
+	.end(cb);
+}
+
+function fetchTableEntitiesRequest(tableName, cb=() => {}) {
+	request(app)
+	.get('/api/fetchEntities/')
+	.query({tableName: tableName})
+	.expect('Content-Type', /json/)
+	.expect(200)
+	.end(cb);
+}
+
+
+/// MARK: - Tests Fixtures
+
+describe("TEST::CreateTable", () => {
+
+	it('Create pre-existing table w/ valid name', () => {
+		createTableRequest('newTable', () => {
+			createTableRequest('newTable', (err, res) => {
+				expect(res.body.error).to.equal(undefined);
+				expect(res.body.result).to.equal(true);
+
+				deleteTableRequest('newTable');
+			});
+		});
+	});
+
+	it('Create table w/ valid name', () => {
+		createTableRequest('validTableName', (err, res) => {
+			expect(res.body.error).to.equal(undefined);
+			expect(res.body.result).to.equal(true);
+
+			deleteTableRequest('validTableName');
+		});
+	});
+
+	it('Create table w/ name < 3 chars', () => {
+		createTableRequest('aa', (err, res) => {
+			expect(res.status).to.equal(400);
+			expect(res.body.error).to.not.equal(undefined);
+		});
+	});
+
+	it('Create table w/ name > 63 chars', () => {
+		createTableRequest(randomString(64), (err, res) => {
+			expect(res.status).to.equal(400);
+			expect(res.body.error).to.not.equal(undefined);
+		});
+	});
+
+	it('Create table w/ empty name', () => {
+		createTableRequest('', (err, res) => {
+			expect(res.status).to.equal(400);
+			expect(res.body.error).to.not.equal(undefined);
+		});
+	});
+});
+
+describe("TEST::DeleteTable", () => {
+
+	it('Delete table w/ valid name', () => {
+		createTableRequest('someValidName', () => {
+			deleteTableRequest('someValidName', (err, res) => {
+				expect(res.body.error).to.equal(undefined);
+				expect(res.body.result).to.equal(true);
+			});
+		});
+	});
+
+	it('Delete non-existing table w/ valid name', () => {
+		deleteTableRequest('nonExistingTableValidName', (err, res) => {
+			expect(res.body.error).to.equal(undefined);
+			expect(res.body.result).to.equal(false);
+		});
+	});
+
+	it('Delete table w/ name < 3 chars', () => {
+		deleteTableRequest('aa', (err, res) => {
+			expect(res.status).to.equal(400);
+			expect(res.body.error).to.not.equal(undefined);
+		});
+	});
+
+	it('Delete table w/ name > 63 chars', () => {
+		deleteTableRequest(randomString(64), (err, res) => {
+			expect(res.status).to.equal(400);
+			expect(res.body.error).to.not.equal(undefined);
+		});
+	});
+
+	it('Delete table w/ empty name', () => {
+		deleteTableRequest('', (err, res) => {
+			expect(res.status).to.equal(400);
+			expect(res.body.error).to.not.equal(undefined);
+		});
+	});
+});
+
+describe("TEST::CreateEntity", () => {
+	
+	const tbl = 'createEntityTestTable';
+	const entityDescriptor = [{key: 'PartitionKey', val: 'pkey', 'type': 'string'}, {key: 'RowKey', val: 'rkey', 'type': 'string'}];
+
+	it('Create basic entity w/ empty table name', () => {
+		createEntityRequest('', entityDescriptor, (err, res) => {
+			expect(res.status).to.equal(400);
+			expect(res.body.error).to.not.equal(undefined);
+		});
+	});
+
+	it('Create basic entity w/ table name < 3 chars', () => {
+		createEntityRequest('aa', entityDescriptor, (err, res) => {
+			expect(res.status).to.equal(400);
+			expect(res.body.error).to.not.equal(undefined);
+		});
+	});
+
+	it('Create basic entity w/ table name > 63 chars', () => {
+		createEntityRequest(randomString(64), entityDescriptor, (err, res) => {
+			expect(res.status).to.equal(400);
+			expect(res.body.error).to.not.equal(undefined);
+		});
+	});
+
+	it('Create basic entity w/ valid table name', () => {
+		createTableRequest(tbl, () => {
+			createEntityRequest(tbl, entityDescriptor, (err, res) => {
+				expect(res.body.error).to.equal(undefined);
+				expect(res.body.result).to.equal(true);
+			});
+		});
+	});
+
+	it('Create custom entity w/ valid table name', () => {
+		createTableRequest(tbl, () => {
+			createEntityRequest(tbl, entityDescriptor.concat([
+				{key: 'strKey', val: 'strVal', 'type': 'string'},
+				{key: 'numKey', val: '23', 'type': 'number'},
+				{key: 'numKey1', val: 42, 'type': 'number'},
+				{key: 'dateKey', val: '2016-05-10T18:36:31.662', 'type': 'datetime'},
+				{key: 'boolKey', val: 'false', 'type': 'boolean'},
+				{key: 'boolKey1', val: true, 'type': 'boolean'},
+				{key: 'uTypeKey', val: '31', 'type': 'unknownType'}
+			]), (err, res) => {
+				expect(res.body.error).to.equal(undefined);
+				expect(res.body.result).to.equal(true);
+			});
+		});
+	});
+
+	it('Create custom entity w/ valid table name and invalid entity values', () => {
+		createTableRequest(tbl, () => {
+			createEntityRequest(tbl, entityDescriptor.concat([
+				{key: 'dateKey', val: 'not-a-date', 'type': 'datetime'},
+				{key: 'numKey', val: 'not-a-date', 'type': 'number'},
+			]), (err, res) => {
+				expect(res.status).to.equal(400);
+				expect(res.body.error).to.not.equal(undefined);
+			});
+		});
+	});
+
+	it('Create invalid entity w/ valid table name', () => {
+		createTableRequest(tbl, () => {
+			createEntityRequest(tbl, [
+				{key: 'PartitionKey', val: '', 'type': 'string'},
+				{key: 'Row', val: null, 'type': 'string'}
+			], (err, res) => {
+				expect(res.status).to.equal(400);
+				expect(res.body.error).to.not.equal(undefined);
+			});
+		});
+	});
+
+	it('Create invalid entity 2 w/ valid table name', () => {
+		createTableRequest(tbl, () => {
+			createEntityRequest(tbl, [], (err, res) => {
+				expect(res.status).to.equal(400);
+				expect(res.body.error).to.not.equal(undefined);
+			});
+		});
+	});
+
+	it('Create empty entity w/ valid table name', () => {
+		createTableRequest(tbl, () => {
+			createEntityRequest(tbl, [
+				{key: 'PartitionKey', val: '', 'type': 'string'},
+				{key: 'RowKey', val: '', 'type': 'string'}
+			], (err, res) => {
+				expect(res.body.error).to.equal(undefined);
+				expect(res.body.result).to.equal(true);
+
+				/// CLEANUP
+				deleteTableRequest(tbl);
+			});
+		});
+	});
+});
+
+describe("TEST::DeleteEntity", () => {
+
+	const tbl = 'deleteEntityTestTable';
+	const entityDescriptor = [{key: 'PartitionKey', val: 'pkey', 'type': 'string'}, {key: 'RowKey', val: 'rkey', 'type': 'string'}];
+
+	it('Delete basic entity', () => {
+		createTableRequest(tbl, () => {
+			createEntityRequest(tbl, entityDescriptor, (err, res) => {
+				deleteEntityRequest(tbl, entityDescriptor, (err, res) => {
+					expect(res.body.error).to.equal(undefined);
+					expect(res.body.result).to.equal(true);
+				});
+			});
+		});
+	});
+
+	it('Delete non-existing entity', () => {
+		createTableRequest(tbl, () => {
+			deleteEntityRequest(tbl, [{key: 'PartitionKey', val: 'nonexisting', 'type': 'string'}, {key: 'RowKey', val: 'nonexisting', 'type': 'string'}], (err, res) => {
+				expect(res.status).to.equal(400);
+				expect(res.body.error).to.not.equal(undefined);
+			});
+		});
+	});
+
+	it('Delete empty entity', () => {
+		createTableRequest(tbl, () => {
+			deleteEntityRequest(tbl, [{key: 'PartitionKey', val: '', 'type': 'string'}, {key: 'RowKey', val: '', 'type': 'string'}], (err, res) => {
+				expect(res.status).to.equal(400);
+				expect(res.body.error).to.not.equal(undefined);
+			});
+		});
+	});
+
+	it('Delete null entity', () => {
+		createTableRequest(tbl, () => {
+			deleteEntityRequest(tbl, [], (err, res) => {
+				expect(res.status).to.equal(400);
+				expect(res.body.error).to.not.equal(undefined);
+			});
+		});
+	});
+
+	it('Delete basic entity w/ empty tableName', () => {
+		deleteEntityRequest('', entityDescriptor, (err, res) => {
+			expect(res.status).to.equal(400);
+			expect(res.body.error).to.not.equal(undefined);
+		});
+	});
+
+	it('Delete basic entity w/ null tableName', () => {
+		deleteEntityRequest(null, entityDescriptor, (err, res) => {
+			expect(res.status).to.equal(400);
+			expect(res.body.error).to.not.equal(undefined);
+		});
+	});
+
+	it('Delete entity null request', () => {
+		deleteEntityRequest(null, [], (err, res) => {
+			expect(res.status).to.equal(400);
+			expect(res.body.error).to.not.equal(undefined);
+
+			/// CLEANUP
+			deleteTableRequest(tbl);
+		});
+	});
+});
+
+describe("TEST::FetchTables", () => {
+
+	it('Fetch tables', () => {
+		fetchTablesRequest((err, res) => {
+			expect(res.body.error).to.equal(undefined);
+			expect(res.body.result).to.equal(true);
+		});
+	});
+});
+
+describe("TEST::FetchEntities", () => {
+
+	const tbl = 'fetchEntitiesTableName';
+	const entityDescriptor = [{key: 'PartitionKey', val: 'pkey', 'type': 'string'}, {key: 'RowKey', val: 'rkey', 'type': 'string'}];
+
+	it('Fetch entities from table w/ count 0', () => {
+		createTableRequest(tbl, () => {
+			fetchTableEntitiesRequest(tbl, (err, res) => {
+				expect(res.body.error).to.equal(undefined);
+				expect(res.body.result).to.equal(true);
+				expect(res.body.result.entries.length).to.equal(0);
+			});
+		});
+	});
+
+	it('Fetch entities from table w/ count 1', () => {
+		createTableRequest(tbl, () => {
+			createEntityRequest(tbl, entityDescriptor, () => {
+				fetchTableEntitiesRequest(tbl, (err, res) => {
+					expect(res.body.error).to.equal(undefined);
+					expect(res.body.result).to.equal(true);
+					expect(res.body.result.entries.length).to.equal(1);
+				});
+			});
+		});
+	});
+
+	it('Fetch entities w/o table', () => {
+		fetchTableEntitiesRequest(null, (err, res) => {
+			expect(res.status).to.equal(400);
+			expect(res.body.error).to.not.equal(undefined);
+		});
+	});
+
+	it('Fetch entities on non-existing table', () => {
+		fetchTableEntitiesRequest('thisTableShouldNotExist', (err, res) => {
+			expect(res.status).to.equal(400);
+			expect(res.body.error).to.not.equal(undefined);
+		});
+	});
+
+	it('Fetch entities on empty table name', () => {
+		fetchTableEntitiesRequest('', (err, res) => {
+			expect(res.status).to.equal(400);
+			expect(res.body.error).to.not.equal(undefined);
+
+			/// CLEANUP
+			deleteTableRequest(tbl);
+		});
+	});
+});
+
+// @end ----------------
