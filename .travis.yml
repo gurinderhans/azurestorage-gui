@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-- 6.0.0
+- 6
 env:
   global:
   - secure: iikjZHfTKbis62UZy5Y14WcuDUw9PV9kv7d7oWUI17qkjvPiny8Zo66QQrF5IC61R2QJFRBeIWg1zZNeoVuy+6g/M3f1+j/tt/i3QKiTr5MqQhYcqNirrWH6PGCX+fzkVg1TXoCc9kryEVTMt5Eb5dNXQX10D65d3QLTsFbxygeEEafKU0dCea2Hp0eLPbfdoCCMlB0qPJBoPbJFXrpfqpu3vScpPoZAvTZ+as44Cz+7O56U9vE6p2db6WSqzMlGzSCfN+rJQHHEMxx23mECKX8+XvDWHLWlm5RmO6NkgI5qDiaLZ+66z9wOZLCk9YRwZM4+Vjt9clh2bR9+jIDZSo3qwtaukn06ALVzBzBz6Y87Irq/ndYQwc7f4gb5x/HkW0PcQUfCwErXLBWQfY7F8gQDEECgBbbQfdsAvgqsQn/v/X0aaqJcO7D9eMlTbxENnZ1B5Ze/BzZShyRXl1LW0TWDwlJ3jloH5RoijUFyjRj/RhqgqOmd/sLR+jVP70Kc/5ZWa/UTAVgYEXIVBuOMw3AuN4Bv7gpSns9jiGnVcZ0PtzYmf+wMwsx2KgnZ6XyDnJmp2h/ynC+di7EhbPV36/qULqMXyjV+we0TUh2I2RWI7bMYHAivy3Ca85kkYlHMfr9iHgof7e8xKXxqdwsbShzNMbohk38ug6dO4BF1amw=
@@ -10,3 +10,5 @@ notifications:
   email: false
 script:
   npm run travistest
+after_success:
+  npm run coverage
