@@ -10,7 +10,7 @@
     ]
   },
   "scripts": {
-    "servertest": "mocha --timeout 5000 --require babel-core/register test/server-tests/*-test.js",
+    "servertest": "mocha --timeout 5000 --require babel-core/register test/server/*-test.js",
     "uitest": "mocha --timeout 5000 --require babel-core/register test/components/*-test.js",
     "test": "nyc mocha --timeout 5000 --require babel-core/register test/**/*-test.js",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
@@ -25,6 +25,7 @@
   "author": "gurinderhans",
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.11.0",
     "azure-storage": "^0.10.0",
     "body-parser": "^1.15.1",
     "env2": "^2.0.7",

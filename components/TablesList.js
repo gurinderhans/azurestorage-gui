@@ -1,10 +1,11 @@
 import React from 'react'
+import * as axios from 'axios'
 
 export default class TablesList extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {newTableName: '', tables: []};
+		this.state = { newTableName: '', tables: [] };
 		
 		this.onTableAddHandler = this.onTableAddHandler.bind(this);
 		this.fieldTableNameChangeHandler = this.fieldTableNameChangeHandler.bind(this);
@@ -12,13 +13,14 @@ export default class TablesList extends React.Component {
 	}
 
 	componentDidMount() {
-		fetch('/api/fetchTables')
-		.then(response => response.json())
-		.then(json => {
+		axios.get('/api/fetchTables')
+		.then(response => {
+			const json = response.data;
+
 			if (json.error) {
 				console.warn(json.error);
 				return;
-			}
+			}                                                                       
 
 			this.setState({tables: json.result.entries});
 		}).catch((error) => {
@@ -27,11 +29,12 @@ export default class TablesList extends React.Component {
 	}
 
 	onTableAddHandler() {
-		fetch(`/api/createTable?tableName=${this.state.newTableName}`, {
-			method: 'PUT'
+		axios.post('/api/createTable', {
+			tableName: this.state.newTableName
 		})
-		.then(response => response.json())
-		.then(json => {
+		.then(response => {
+			const json = response.data;
+
 			if (json.error) {
 				console.warn(json.error);
 				return;
@@ -53,11 +56,12 @@ export default class TablesList extends React.Component {
 	}
 
 	deleteTableHandler(deleteTableIndex) {
-		fetch(`/api/deleteTable?tableName=${this.state.tables[deleteTableIndex]}`, {
-			method: 'PUT'
+		axios.post('/api/deleteTable', {
+			tableName: this.state.tables[deleteTableIndex]
 		})
-		.then(response => response.json())
-		.then(json => {
+		.then(response => {
+			const json = response.data;
+
 			if (json.error) {
 				console.warn(json.error);
 				return;

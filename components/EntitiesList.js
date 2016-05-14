@@ -1,4 +1,5 @@
 import React from 'react'
+import * as axios from 'axios'
 import Entity from './Entity'
 
 export default class EntitiesList extends React.Component {
@@ -27,9 +28,14 @@ export default class EntitiesList extends React.Component {
 			return;
 		}
 
-		fetch(`/api/fetchEntities?tableName=${props.tableName}`)
-		.then(response => response.json())
-		.then(json => {
+		axios.get('/api/fetchEntities', {
+			params: {
+				tableName: props.tableName
+			}
+		})
+		.then(response => {
+			const json = response.data;
+
 			if (json.error) {
 				console.warn(json.error);
 				return;
@@ -82,16 +88,13 @@ export default class EntitiesList extends React.Component {
 	}
 
 	onEntitySaveHandler(entityId) {
-		fetch(`/api/insertOrReplaceEntity?tableName=${this.props.tableName}`, {
-			method: 'PUT',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(this.state.entities[entityId])
+		axios.post('/api/insertOrReplaceEntity', {
+			tableName: this.props.tableName,
+			entityDescriptor: this.state.entities[entityId]
 		})
-		.then(response => response.json())
-		.then(json => {
+		.then(response => {
+			const json = response.data;
+
 			if (json.error) {
 				console.warn('error:',json.error);
 				return;
@@ -103,16 +106,13 @@ export default class EntitiesList extends React.Component {
 	}
 
 	onEntityDeleteHandler(entityId) {
-		fetch(`/api/deleteEntity?tableName=${this.props.tableName}`, {
-			method: 'PUT',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(this.state.entities[entityId])
+		axios.post('/api/deleteEntity', {
+			tableName: this.props.tableName,
+			entityDescriptor: this.state.entities[entityId]
 		})
-		.then(response => response.json())
-		.then(json => {
+		.then(response => {
+			const json = response.data;
+
 			if (json.error) {
 				console.warn(json.error);
 				return;

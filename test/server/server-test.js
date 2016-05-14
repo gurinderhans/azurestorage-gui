@@ -8,8 +8,8 @@ const randomString = (n) => {let r="",t="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklm
 
 function createTableRequest(tableName, cb=() => {}) {
 	request(app)
-	.put('/api/createTable')
-	.query({ tableName: tableName })
+	.post('/api/createTable')
+	.send({ tableName: tableName })
 	.expect('Content-Type', /json/)
 	.expect(200)
 	.end(cb);
@@ -17,8 +17,8 @@ function createTableRequest(tableName, cb=() => {}) {
 
 function deleteTableRequest(tableName, cb=() => {}) {
 	request(app)
-	.put('/api/deleteTable')
-	.query({ tableName: tableName })
+	.post('/api/deleteTable')
+	.send({ tableName: tableName })
 	.expect('Content-Type', /json/)
 	.expect(200)
 	.end(cb);
@@ -26,11 +26,10 @@ function deleteTableRequest(tableName, cb=() => {}) {
 
 function createEntityRequest(tableName, entityDescriptor, cb=() => {}) {
 	request(app)
-	.put(`/api/insertOrReplaceEntity`)
-	.query({ tableName: tableName })
+	.post('/api/insertOrReplaceEntity')
 	.set('Accept', 'application/json')
 	.set('Content-Type', 'application/json')
-	.send(entityDescriptor)
+	.send({ tableName: tableName, entityDescriptor })
 	.expect('Content-Type', /json/)
 	.expect(200)
 	.end(cb);
@@ -38,11 +37,10 @@ function createEntityRequest(tableName, entityDescriptor, cb=() => {}) {
 
 function deleteEntityRequest(tableName, entityDescriptor, cb=() => {}) {
 	request(app)
-	.put(`/api/deleteEntity`)
-	.query({ tableName: tableName })
+	.post('/api/deleteEntity')
 	.set('Accept', 'application/json')
 	.set('Content-Type', 'application/json')
-	.send(entityDescriptor)
+	.send({ tableName: tableName, entityDescriptor })
 	.expect('Content-Type', /json/)
 	.expect(200)
 	.end(cb);

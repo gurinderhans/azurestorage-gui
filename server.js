@@ -45,9 +45,9 @@ app.use(express.static(__dirname + '/public'));
 const router = express.Router();
 
 
-router.route('/createTable').put((req, res) => {
+router.route('/createTable').post((req, res) => {
 	try {
-		tableService.createTableIfNotExists(req.query.tableName, function(error, result, response) {
+		tableService.createTableIfNotExists(req.body.tableName, function(error, result, response) {
 			if (error) {
 				res.status(400).json({error: error});
 			} else {
@@ -59,9 +59,9 @@ router.route('/createTable').put((req, res) => {
 	}
 });
 
-router.route('/deleteTable').put((req, res) => {
+router.route('/deleteTable').post((req, res) => {
 	try {
-		tableService.deleteTableIfExists(req.query.tableName, function(error, result, response) {
+		tableService.deleteTableIfExists(req.body.tableName, function(error, result, response) {
 			if (error) {
 				res.status(400).json({error: error});
 			} else {
@@ -73,12 +73,12 @@ router.route('/deleteTable').put((req, res) => {
 	}
 });
 
-router.route('/insertOrReplaceEntity').put((req, res) => {
+router.route('/insertOrReplaceEntity').post((req, res) => {
 
 	try {
-		const azureEntity = toAzure(req.body);
+		const azureEntity = toAzure(req.body.entityDescriptor);
 
-		tableService.insertOrReplaceEntity(req.query.tableName, azureEntity, (error, result, response) => {
+		tableService.insertOrReplaceEntity(req.body.tableName, azureEntity, (error, result, response) => {
 			if (error) {
 				res.status(400).json({error: error});
 			} else {
@@ -90,11 +90,11 @@ router.route('/insertOrReplaceEntity').put((req, res) => {
 	}
 });
 
-router.route('/deleteEntity').put((req, res) => {
+router.route('/deleteEntity').post((req, res) => {
 	try {
-		const azureEntity = toAzure(req.body);
+		const azureEntity = toAzure(req.body.entityDescriptor);
 
-		tableService.deleteEntity(req.query.tableName, azureEntity, (error, result, response) => {
+		tableService.deleteEntity(req.body.tableName, azureEntity, (error, result, response) => {
 			if (error) {
 				res.status(400).json({error: error});
 			} else {
