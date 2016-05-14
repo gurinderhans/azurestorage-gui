@@ -14,17 +14,13 @@ export default class App extends React.Component {
 	render() {
 		return (
 			<div className='row'>
-				<div className='col-md-3'>
-					<TablesList tableClickHandle={this.tableClickHandle} />
-				</div>
-				<div className='col-md-9'>
-					<EntitiesList tableName={this.state.selectedTable} />
-				</div>
+				<TablesList tableClickHandle={this.tableClickHandle} />
+				<EntitiesList tableName={this.state.selectedTable} />
 			</div>
 		);
 	}
 
 	tableClickHandle(selectedTable) {
-		this.setState({selectedTable});
+		this.setState({ selectedTable });
 	}
 }

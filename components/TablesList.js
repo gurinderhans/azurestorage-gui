@@ -55,7 +55,9 @@ export default class TablesList extends React.Component {
 		this.setState({newTableName: event.target.value});
 	}
 
-	deleteTableHandler(deleteTableIndex) {
+	deleteTableHandler(deleteTableIndex, ev) {
+		ev.stopPropagation();
+		
 		axios.post('/api/deleteTable', {
 			tableName: this.state.tables[deleteTableIndex]
 		})
@@ -79,25 +81,28 @@ export default class TablesList extends React.Component {
 		});
 	}
 
+
+
 	render() {
 		return (
-			<div>
-				<h3>Tables</h3>
-				<div>
-					<input type='text' placeholder='New Table Name' value={this.state.newTableName} onChange={this.fieldTableNameChangeHandler} />
-					<button onClick={this.onTableAddHandler}>+</button>
+			<div className='col-md-3'>
+				<br />
+				<div className="input-group">
+					<input type="text" value={this.state.newTableName} onChange={this.fieldTableNameChangeHandler} placeholder="New table name" className="form-control" aria-label="New table input" />
+					<div className="input-group-btn">
+						<button type="button" onClick={this.onTableAddHandler} className="btn btn-primary" aria-label="Add"><i className="fa fa-plus" aria-hidden="true"></i></button>
+					</div>
 				</div>
-				<ul>
+				<p className="divider" role="separator"></p>
+				<div className="list-group">
 					{this.state.tables.map((table, i) => {
 						return (
-							<li key={i}>
-								<span onClick={this.props.tableClickHandle.bind(null, table)}>{table}</span>
-								&nbsp;
-								<button onClick={this.deleteTableHandler.bind(null, i)}>-</button>
-							</li>
+							<a key={i} className="list-group-item" onClick={this.props.tableClickHandle.bind(null, table)}>
+								{table}<button className="btn btn-danger btn-xs pull-right" onClick={this.deleteTableHandler.bind(null, i)}><i className="fa fa-trash" aria-hidden="true"></i></button>
+							</a>
 						);
 					})}
-				</ul>
+				</div>
 			</div>
 		);
 	}

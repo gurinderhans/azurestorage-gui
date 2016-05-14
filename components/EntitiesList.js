@@ -139,7 +139,7 @@ export default class EntitiesList extends React.Component {
 		let entitiesLayout;
 		if (this.props.tableName) {
 			entitiesLayout = (
-				<div>
+				<div className='col-md-9'>
 					<h2>Selected table: {this.props.tableName}, <button onClick={this.onEntityAddHandler}>+</button></h2>
 					{this.state.entities.map((entity, i) => {
 						return (
