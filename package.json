@@ -12,7 +12,7 @@
   "scripts": {
     "servertest": "mocha --timeout 5000 --require babel-core/register test/server/*-test.js",
     "uitest": "mocha --timeout 5000 --require babel-core/register test/components/*-test.js",
-    "test": "nyc mocha --timeout 5000 --require babel-core/register test/**/*-test.js",
+    "test": "nyc mocha --timeout 5000 --require babel-core/register test/server/*-test.js",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "watch": "watchify -v -d -t lessify -t [ babelify --presets [ es2015 react ] ] client.js -o public/compiled.js",
     "build": "NODE_ENV=production browserify client.js -t lessify -t [ babelify --presets [ es2015 react ] ] | uglifyjs > public/compiled.js",
