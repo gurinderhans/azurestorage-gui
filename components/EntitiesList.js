@@ -147,7 +147,7 @@ export default class EntitiesList extends React.Component {
 							</a>
 						</div>
 						<div className="collapse navbar-collapse">
-							<form className="navbar-form navbar-left" role="search">
+							<form className="navbar-form navbar-right" role="search">
 								<div className="form-group">
 									<input type="text" className="form-control" placeholder="Search Entity" />
 								</div>
