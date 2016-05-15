@@ -58,7 +58,7 @@ export default class EntityItem extends React.Component {
 		if (this.props.item.type === 'boolean') {
 			entityItemValueField = (
 				<div className="input-group-btn">
-					<button type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{String(this.props.item.val)} <span className="caret"></span></button>
+					<button type="button" className="btn btn-default dropdown-toggle etypeBool" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{String(this.props.item.val)} <span className="caret"></span></button>
 					<ul className="dropdown-menu">
 						<li onClick={this.fieldValOnChange}><a data-value="true">true</a></li>
 						<li onClick={this.fieldValOnChange}><a data-value="false">false</a></li>
@@ -74,12 +74,12 @@ export default class EntityItem extends React.Component {
 		}
 
 		return (
-			<div className="input-group" style={{marginBottom: 10 + 'px'}}>
-				<input value={this.props.item.key} onChange={this.fieldKeyOnChange} className="form-control" type="text" placeholder="Prop" />
-				<span className="input-group-addon" style={{padding: 0, border: 'none', width:0 + 'px'}}></span>
+			<div className="input-group entityItem">
+				<input value={this.props.item.key} onChange={this.fieldKeyOnChange} className="form-control eKey" type="text" placeholder="Prop" />
+				<span className="input-group-addon ePropValSplitter"></span>
 				{entityItemValueField}
 				<div className="input-group-btn">
-					<button type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{this.props.item.type} <span className="caret"></span></button>
+					<button type="button" className="btn btn-default dropdown-toggle etype" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{this.props.item.type} <span className="caret"></span></button>
 					<ul className="dropdown-menu">
 						<li onClick={this.fieldTypeOnChange}><a data-value="string">string</a></li>
 						<li onClick={this.fieldTypeOnChange}><a data-value="number">number</a></li>

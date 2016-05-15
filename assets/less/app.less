@@ -1,15 +1,38 @@
 body { padding-top: 20px; }
 
-
 .entitygrid {
 	-moz-column-width: 25em;
 	-webkit-column-width: 25em;
-	-moz-column-gap: 1em;
-	-webkit-column-gap:1em; 
+	-moz-column-gap: 0em;
+	-webkit-column-gap: 0em; 
 
-	.entitygrid-item {
+	.entitygrid-each {
 		display: inline-block;
 		width:  100%;
 		float:none;
+	}
+
+	.entityItem {
+		margin-bottom: 10px;
+
+		.eKey {
+			border-right: 0px;
+		}
+
+		.ePropValSplitter {
+			padding: 0;
+			border: none;
+			width: 0px;
+		}
+
+		.etype {
+			border-radius: 0px;
+		}
+
+		.etypeBool {
+			border-radius: 0px;
+			border-right: 0px;
+			box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+		}
 	}
 }

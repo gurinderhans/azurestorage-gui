@@ -9,7 +9,7 @@ export default class Entity extends React.Component {
 
 	render() {
 		return (
-			<div className="col-md-6 entitygrid-item">
+			<div className="col-md-6 entitygrid-each">
 				<div className="panel panel-default">
 					<div className="panel-heading">
 						<div className="input-group">
