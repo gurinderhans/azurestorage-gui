@@ -104,8 +104,9 @@ export default class TablesList extends React.Component {
 				<p className="divider" role="separator"></p>
 				<div className="list-group">
 					{this.state.tables.map((table, i) => {
+						const tableRowClass = (table === this.props.selectedTable) ? 'list-group-item active' : 'list-group-item';
 						return (
-							<a key={i} className="list-group-item" onClick={this.props.tableClickHandle.bind(null, table)}>
+							<a key={i} className={tableRowClass} onClick={this.props.tableClickHandle.bind(null, table)}>
 								{table}<button className="btn btn-danger btn-xs pull-right" onClick={this.deleteTableHandler.bind(null, i)}><i className="fa fa-trash" aria-hidden="true"></i></button>
 							</a>
 						);

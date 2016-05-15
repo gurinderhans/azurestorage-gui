@@ -14,7 +14,7 @@ export default class App extends React.Component {
 	render() {
 		return (
 			<div className="row">
-				<TablesList tableClickHandle={this.tableClickHandle} />
+				<TablesList selectedTable={this.state.selectedTable} tableClickHandle={this.tableClickHandle} />
 				<EntitiesList tableName={this.state.selectedTable} />
 			</div>
 		);
