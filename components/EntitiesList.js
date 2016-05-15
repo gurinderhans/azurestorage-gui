@@ -136,24 +136,48 @@ export default class EntitiesList extends React.Component {
 	}
 
 	render() {
-		let entitiesLayout;
+		let headerLayout;
 		if (this.props.tableName) {
-			entitiesLayout = (
-				<div className="col-md-9">
-					<h2 className="well">Selected table: <b>{this.props.tableName}</b> <button className="btn btn-success" onClick={this.onEntityAddHandler}><i className="fa fa-plus" aria-hidden="true"></i></button></h2>
-					<div className="row">
-						{this.state.entities.map((entity, i) => {
-							return (
-								<Entity key={i} data={entity} entityId={i} onEntitySave={this.onEntitySaveHandler} onEntityDelete={this.onEntityDeleteHandler} onEntityItemAdd={this.onEntityItemAddHandler} onEntityItemChange={this.onEntityItemChangeHandler} onEntityItemDelete={this.onEntityItemDeleteHandler} />
-							);
-						})}
+			headerLayout = (
+				<nav className="navbar navbar-default">
+					<div className="container-fluid">
+						<div className="navbar-header">
+							<a className="navbar-brand">
+								{this.props.tableName}
+							</a>
+						</div>
+						<div className="collapse navbar-collapse">
+							<form className="navbar-form navbar-left" role="search">
+								<div className="form-group">
+									<input type="text" className="form-control" placeholder="Search Entity" />
+								</div>
+							</form>
+							<ul className="nav navbar-nav navbar-right">
+								<button className="btn btn-success navbar-btn" onClick={this.onEntityAddHandler}><i className="fa fa-plus" aria-hidden="true"></i>&nbsp;Entity</button>
+							</ul>
+						</div>
 					</div>
-				</div>
+				</nav>
 			);
 		} else {
-			entitiesLayout = (<h3>Select a <b><u>table</u></b> from the <i>list</i></h3>);
+			headerLayout = (
+				<div className="well">
+					<h3>Select a <b><u>table</u></b> from the <i>list</i></h3>
+				</div>
+			);
 		}
 
-		return entitiesLayout;
+		return (
+			<div className="col-md-9">
+				{headerLayout}
+				<div className="row">
+					{this.state.entities.map((entity, i) => {
+						return (
+							<Entity key={i} data={entity} entityId={i} onEntitySave={this.onEntitySaveHandler} onEntityDelete={this.onEntityDeleteHandler} onEntityItemAdd={this.onEntityItemAddHandler} onEntityItemChange={this.onEntityItemChangeHandler} onEntityItemDelete={this.onEntityItemDeleteHandler} />
+						);
+					})}
+				</div>
+			</div>
+		);
 	}
 }

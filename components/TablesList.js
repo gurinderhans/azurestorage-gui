@@ -85,8 +85,16 @@ export default class TablesList extends React.Component {
 
 	render() {
 		return (
-			<div className='col-md-3'>
-				<br />
+			<div className="col-md-3">
+				<nav className="navbar navbar-default">
+					<div className="container-fluid">
+						<div className="navbar-header">
+							<a className="navbar-brand">
+								AzureTables GUI
+							</a>
+						</div>
+					</div>
+				</nav>
 				<div className="input-group">
 					<input type="text" value={this.state.newTableName} onChange={this.fieldTableNameChangeHandler} placeholder="New table name" className="form-control" aria-label="New table input" />
 					<div className="input-group-btn">

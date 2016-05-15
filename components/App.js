@@ -13,7 +13,7 @@ export default class App extends React.Component {
 
 	render() {
 		return (
-			<div className='row'>
+			<div className="row">
 				<TablesList tableClickHandle={this.tableClickHandle} />
 				<EntitiesList tableName={this.state.selectedTable} />
 			</div>
