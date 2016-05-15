@@ -16,7 +16,7 @@
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "watch": "watchify -v -d -t lessify -t [ babelify --presets [ es2015 react ] ] client.js -o public/compiled.js",
     "build": "NODE_ENV=production browserify client.js -t lessify -t [ babelify --presets [ es2015 react ] ] | uglifyjs > public/compiled.js",
-    "start": "node index.js"
+    "start": "npm run build && node index.js"
   },
   "repository": {
     "type": "git",
