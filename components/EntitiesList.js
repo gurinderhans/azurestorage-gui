@@ -170,7 +170,7 @@ export default class EntitiesList extends React.Component {
 		return (
 			<div className="col-md-9">
 				{headerLayout}
-				<div className="row">
+				<div className="row entitygrid">
 					{this.state.entities.map((entity, i) => {
 						return (
 							<Entity key={i} data={entity} entityId={i} onEntitySave={this.onEntitySaveHandler} onEntityDelete={this.onEntityDeleteHandler} onEntityItemAdd={this.onEntityItemAddHandler} onEntityItemChange={this.onEntityItemChangeHandler} onEntityItemDelete={this.onEntityItemDeleteHandler} />
