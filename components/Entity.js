@@ -9,18 +9,23 @@ export default class Entity extends React.Component {
 
 	render() {
 		return (
-			<div>
-				<div>
-					<button onClick={this.props.onEntityItemAdd.bind(null, this.props.entityId)} >Add Entity Item</button>&nbsp;
-					<button onClick={this.props.onEntitySave.bind(null, this.props.entityId)}>Save Entity</button>&nbsp;
-					<button onClick={this.props.onEntityDelete.bind(null, this.props.entityId)}>Delete Entity</button>
+			<div className="col-md-6">
+				<div className="panel panel-default">
+					<div className="panel-heading">
+						<div className="input-group">
+							<div className="btn-group">
+								<button onClick={this.props.onEntityItemAdd.bind(null, this.props.entityId)} className="btn btn-sm btn-primary"><i className="fa fa-plus" aria-hidden="true"></i>&nbsp;Item</button>
+								<button onClick={this.props.onEntitySave.bind(null, this.props.entityId)} className="btn btn-sm btn-success"><i className="fa fa-floppy-o" aria-hidden="true"></i>&nbsp;Save</button>
+								<button onClick={this.props.onEntityDelete.bind(null, this.props.entityId)} className="btn btn-sm btn-danger"><i className="fa fa-trash" aria-hidden="true"></i>&nbsp;Delete</button>
+							</div>
+						</div>
+					</div>
+					<div className="panel-body">
+						{this.props.data.map((item, i) => {
+							return <EntityItem key={i} item={item} entityItemId={i} entityId={this.props.entityId} onEntityItemChange={this.props.onEntityItemChange} onEntityItemDelete={this.props.onEntityItemDelete} />;
+						})}
+					</div>
 				</div>
-				<div>
-					{this.props.data.map((item, i) => {
-						return <EntityItem key={i} item={item} entityItemId={i} entityId={this.props.entityId} onEntityItemChange={this.props.onEntityItemChange} onEntityItemDelete={this.props.onEntityItemDelete} />;
-					})}
-				</div>
-				<hr />
 			</div>
 		);
 	}

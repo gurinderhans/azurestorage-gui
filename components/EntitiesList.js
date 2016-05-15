@@ -43,7 +43,7 @@ export default class EntitiesList extends React.Component {
 
 			const mappedEntities = json.result.entries.map(entity => {
 				return Object.keys(entity)
-						.filter(key => (key !== '.metadata'))// FIXME: take this away from here...
+						.filter(key => (key !== '.metadata' && key !== 'Timestamp'))// FIXME: take this away from here...
 						.map(key => {
 							let etype;
 							if (entity[key].$) {
@@ -139,13 +139,15 @@ export default class EntitiesList extends React.Component {
 		let entitiesLayout;
 		if (this.props.tableName) {
 			entitiesLayout = (
-				<div className='col-md-9'>
-					<h2>Selected table: {this.props.tableName}, <button onClick={this.onEntityAddHandler}>+</button></h2>
-					{this.state.entities.map((entity, i) => {
-						return (
-							<Entity key={i} data={entity} entityId={i} onEntitySave={this.onEntitySaveHandler} onEntityDelete={this.onEntityDeleteHandler} onEntityItemAdd={this.onEntityItemAddHandler} onEntityItemChange={this.onEntityItemChangeHandler} onEntityItemDelete={this.onEntityItemDeleteHandler} />
-						);
-					})}
+				<div className="col-md-9">
+					<h2 className="well">Selected table: <b>{this.props.tableName}</b> <button className="btn btn-success" onClick={this.onEntityAddHandler}><i className="fa fa-plus" aria-hidden="true"></i></button></h2>
+					<div className="row">
+						{this.state.entities.map((entity, i) => {
+							return (
+								<Entity key={i} data={entity} entityId={i} onEntitySave={this.onEntitySaveHandler} onEntityDelete={this.onEntityDeleteHandler} onEntityItemAdd={this.onEntityItemAddHandler} onEntityItemChange={this.onEntityItemChangeHandler} onEntityItemDelete={this.onEntityItemDeleteHandler} />
+							);
+						})}
+					</div>
 				</div>
 			);
 		} else {
